@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
+
 import {
   Dialog,
   DialogContent,
@@ -17,14 +18,6 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog"
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
 import {
   Popover,
   PopoverContent,
@@ -36,8 +29,10 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp"
+import { StepSelect } from "@/components/application/step-select";
+import { TechnicalSelect } from "@/components/application/technical-select";
 
-export function Order() {
+export function RegisterOrder() {
 
   const inputRef = useRef<HTMLInputElement>(null);
   const [isOpen, setIsOpen] = useState(true);
@@ -69,7 +64,7 @@ export function Order() {
 
   return (
     <main className="w-full flex flex-col items-center justify-start h-screen absolute">
-      <div className="w-full space-y-1 flex flex-col items-center justify-center bg-[#4D88D8] h-1/4">
+      <div className="w-full space-y-1 flex flex-col items-center justify-center bg-zinc-800 h-[220px]">
         <h1 className="uppercase text-3xl text-zinc-50 font-semibold">Cadastro de pedido</h1>
         <p className="text-zinc-50 font-medium">Aqui você casdastra novos pedidos</p>
       </div>
@@ -83,21 +78,21 @@ export function Order() {
             className="w-full flex flex-col mx-auto justify-center space-y-4"
           >
             <div className="space-y-2">
-              <label className="font-medium">Placa <span className="text-xs text-[#4D88D8]/60">(Obrigatório)</span></label>
+              <label className="font-medium">Placa <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
               <Input
                 placeholder="Digite a placa..."
               />
             </div>
 
             <div className="space-y-2">
-              <label className="font-medium">Modelo do carro <span className="text-xs text-[#4D88D8]/60">(Obrigatório)</span></label>
+              <label className="font-medium">Modelo do carro <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
               <Input
                 placeholder="Digite o modelo do carro..."
               />
             </div>
 
             <div className="w-full flex flex-col items-start space-y-2">
-              <label className="font-medium">Previsão de entrega <span className="text-xs text-[#4D88D8]/60">(Obrigatório)</span></label>
+              <label className="font-medium">Previsão de entrega <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
               <Popover >
                 <PopoverTrigger asChild>
                   <Button
@@ -123,44 +118,19 @@ export function Order() {
             </div>
 
             <div className="w-full space-y-2">
-              <label className="font-medium">Etapa <span className="text-xs text-[#4D88D8]/60">(Obrigatório)</span></label>
-              <Select>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecione a etapa" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="análise">Análise</SelectItem>
-                    <SelectItem value="orçamento">Orçamento</SelectItem>
-                    <SelectItem value="execução">Execução</SelectItem>
-                    <SelectItem value="lavação">Lavação</SelectItem>
-                    <SelectItem value="geometria">Geometria</SelectItem>
-                    <SelectItem value="aguardando">Aguardando</SelectItem>
-                    <SelectItem value="finalizado">Finalizado</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <label className="font-medium">Etapa <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
+              <StepSelect />
             </div>
 
             <div className="w-full space-y-2">
-              <label className="font-medium bri">Técnico <span className="text-xs text-[#4D88D8]/60">(Obrigatório)</span></label>
-              <Select>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecione o técnico" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectItem value="análise">Bernardo Padilha</SelectItem>
-                    <SelectItem value="orçamento">Rafael Pereira</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
+              <label className="font-medium bri">Técnico <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
+              <TechnicalSelect />
             </div>
 
             <Button
               type="submit"
 
-              className="bg-[#4D88D8]"
+              className="bg-zinc-700"
             >
               <Plus />
               Cadatrar
@@ -202,3 +172,16 @@ export function Order() {
     </main>
   )
 }
+
+// Preciso mostrar em tela todos os pedidos cadastrados
+
+// Nesta tela caso va na url o parametro ?tecnico:BernardoAlvesPadilha
+// carregar direto os pedidos deste usuário
+
+// Quando a atendente carregar a tela e pedidos pedir a senha e mostrar todos
+
+// colocar cards com diferentes cores para cada etapa do pedido
+
+// tudo na url /pedidos
+
+// Considerar colocar um menubar nas telas para fazer transição entre telas

@@ -1,14 +1,14 @@
-import { Order } from '@/pages/order'
-import { Technical } from '@/pages/technical'
+import { RegisterOrder } from '@/pages/register-order'
+import { Orders } from '@/pages/orders'
 import { createBrowserRouter } from 'react-router-dom'
 
 export const router = createBrowserRouter([
   {
     path: '/',
-    element: <Order />
+    element: <RegisterOrder />
   },
   {
-    path: '/tecnico',
-    element: <Technical />
+    path: '/pedidos',
+    element: <Orders />
   }
 ])

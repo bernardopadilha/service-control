@@ -1,0 +1,108 @@
+interface orderProps {
+  id: number,
+  license_plate: string,
+  model: string,
+  entry_date: string,
+  exit_date: string | null,
+  delivery_prevision: string,
+  created_at: string,
+  step: "Análise" |
+   "Orçamento" |
+    "Execução" |
+    "Lavação" |
+    "Geometria" |
+    "Aguardando" |
+    "Finalizado",
+  technical: "Bernardo Alves Padilha" | "Rafael dos Santos Pereira",
+}
+
+export const orders: orderProps[] = [
+  {
+    id: 1,
+    license_plate: 'SCC2A18',
+    model: 'Gol',
+    entry_date: '2024-05-24T01:51:31.000Z',
+    exit_date: null,
+    delivery_prevision: '2024-05-25T01:51:31.000Z',
+    created_at: '2024-05-24T01:51:31.000Z',
+    step: 'Análise',
+    technical: 'Bernardo Alves Padilha',
+  },
+  {
+    id: 1,
+    license_plate: 'SCC2A18',
+    model: 'Gol',
+    entry_date: '2024-05-24T01:51:31.000Z',
+    exit_date: null,
+    delivery_prevision: '2024-05-25T01:51:31.000Z',
+    created_at: '2024-05-24T01:51:31.000Z',
+    step: 'Análise',
+    technical: 'Bernardo Alves Padilha',
+  },
+  {
+    id: 2,
+    license_plate: 'SCC2A18',
+    model: 'Gol',
+    entry_date: '2024-05-24T01:51:31.000Z',
+    exit_date: null,
+    delivery_prevision: '2024-05-25T01:51:31.000Z',
+    created_at: '2024-05-24T01:51:31.000Z',
+    step: 'Aguardando',
+    technical: 'Bernardo Alves Padilha',
+  },
+  {
+    id: 3,
+    license_plate: 'SCC2A18',
+    model: 'Gol',
+    entry_date: '2024-05-24T01:51:31.000Z',
+    exit_date: null,
+    delivery_prevision: '2024-05-25T01:51:31.000Z',
+    created_at: '2024-05-24T01:51:31.000Z',
+    step: 'Execução',
+    technical: 'Bernardo Alves Padilha',
+  },
+  {
+    id: 4,
+    license_plate: 'SCC2A18',
+    model: 'Gol',
+    entry_date: '2024-05-24T01:51:31.000Z',
+    exit_date: null,
+    delivery_prevision: '2024-05-25T01:51:31.000Z',
+    created_at: '2024-05-24T01:51:31.000Z',
+    step: 'Finalizado',
+    technical: 'Bernardo Alves Padilha',
+  },
+  {
+    id: 5,
+    license_plate: 'SCC2A18',
+    model: 'Gol',
+    entry_date: '2024-05-24T01:51:31.000Z',
+    exit_date: null,
+    delivery_prevision: '2024-05-25T01:51:31.000Z',
+    created_at: '2024-05-24T01:51:31.000Z',
+    step: 'Geometria',
+    technical: 'Bernardo Alves Padilha',
+  },
+  {
+    id: 6,
+    license_plate: 'SCC2A18',
+    model: 'Gol',
+    entry_date: '2024-05-24T01:51:31.000Z',
+    exit_date: null,
+    delivery_prevision: '2024-05-25T01:51:31.000Z',
+    created_at: '2024-05-24T01:51:31.000Z',
+    step: 'Lavação',
+    technical: 'Bernardo Alves Padilha',
+  },
+  {
+    id: 7,
+    license_plate: 'SCC2A18',
+    model: 'Gol',
+    entry_date: '2024-05-24T01:51:31.000Z',
+    exit_date: null,
+    delivery_prevision: '2024-05-25T01:51:31.000Z',
+    created_at: '2024-05-24T01:51:31.000Z',
+    step: 'Orçamento',
+    technical: 'Bernardo Alves Padilha',
+  }
+]
