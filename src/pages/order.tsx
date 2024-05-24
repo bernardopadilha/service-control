@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { toast } from 'sonner';
 import { format } from "date-fns";
@@ -39,6 +39,7 @@ import {
 
 export function Order() {
 
+  const inputRef = useRef<HTMLInputElement>(null);
   const [isOpen, setIsOpen] = useState(true);
   const [otp, setOtp] = useState("");
   const [date, setDate] = useState<Date | undefined>(new Date())
@@ -51,9 +52,20 @@ export function Order() {
         toast.success("Autenticação concluída")
       } else {
         toast.error("A chave inserida esta incorreta")
-      } 
+      }
     }
   };
+
+  useEffect(() => {
+    if (isOpen) {
+      // Verifica se o dispositivo é um dispositivo móvel
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      // Foca no campo de entrada apenas se for um dispositivo móvel
+      if (isMobile && inputRef.current) {
+        inputRef.current.focus();
+      }
+    }
+  }, [isOpen]);
 
   return (
     <main className="w-full flex flex-col items-center justify-start h-screen absolute">
@@ -70,21 +82,21 @@ export function Order() {
             }}
             className="w-full flex flex-col mx-auto justify-center space-y-4"
           >
-            <div>
+            <div className="space-y-2">
               <label className="font-medium">Placa <span className="text-xs text-[#4D88D8]/60">(Obrigatório)</span></label>
               <Input
                 placeholder="Digite a placa..."
               />
             </div>
 
-            <div>
+            <div className="space-y-2">
               <label className="font-medium">Modelo do carro <span className="text-xs text-[#4D88D8]/60">(Obrigatório)</span></label>
               <Input
                 placeholder="Digite o modelo do carro..."
               />
             </div>
 
-            <div className="w-full flex flex-col items-start">
+            <div className="w-full flex flex-col items-start space-y-2">
               <label className="font-medium">Previsão de entrega <span className="text-xs text-[#4D88D8]/60">(Obrigatório)</span></label>
               <Popover >
                 <PopoverTrigger asChild>
@@ -110,41 +122,39 @@ export function Order() {
               </Popover>
             </div>
 
-            <div className="w-full gap-3 flex items-center justify-center ">
-              <div className="w-full">
-                <label className="font-medium">Etapa <span className="text-xs text-[#4D88D8]/60">(Obrigatório)</span></label>
-                <Select>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecione a etapa" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="análise">Análise</SelectItem>
-                      <SelectItem value="orçamento">Orçamento</SelectItem>
-                      <SelectItem value="execução">Execução</SelectItem>
-                      <SelectItem value="lavação">Lavação</SelectItem>
-                      <SelectItem value="geometria">Geometria</SelectItem>
-                      <SelectItem value="aguardando">Aguardando</SelectItem>
-                      <SelectItem value="finalizado">Finalizado</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="w-full space-y-2">
+              <label className="font-medium">Etapa <span className="text-xs text-[#4D88D8]/60">(Obrigatório)</span></label>
+              <Select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecione a etapa" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="análise">Análise</SelectItem>
+                    <SelectItem value="orçamento">Orçamento</SelectItem>
+                    <SelectItem value="execução">Execução</SelectItem>
+                    <SelectItem value="lavação">Lavação</SelectItem>
+                    <SelectItem value="geometria">Geometria</SelectItem>
+                    <SelectItem value="aguardando">Aguardando</SelectItem>
+                    <SelectItem value="finalizado">Finalizado</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
 
-              <div className="w-full">
-                <label className="font-medium bri">Técnico <span className="text-xs text-[#4D88D8]/60">(Obrigatório)</span></label>
-                <Select>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecione o técnico" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="análise">Bernardo Padilha</SelectItem>
-                      <SelectItem value="orçamento">Rafael Pereira</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-              </div>
+            <div className="w-full space-y-2">
+              <label className="font-medium bri">Técnico <span className="text-xs text-[#4D88D8]/60">(Obrigatório)</span></label>
+              <Select>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecione o técnico" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="análise">Bernardo Padilha</SelectItem>
+                    <SelectItem value="orçamento">Rafael Pereira</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </div>
 
             <Button
@@ -172,7 +182,7 @@ export function Order() {
               maxLength={6}
             >
               <InputOTPGroup>
-                <InputOTPSlot index={0} />
+                <InputOTPSlot index={0} ref={inputRef} />
                 <InputOTPSlot index={1} />
                 <InputOTPSlot index={2} />
               </InputOTPGroup>
