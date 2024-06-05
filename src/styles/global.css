@@ -71,7 +71,7 @@
       @apply border-border;
     }
     body {
-      @apply bg-zinc-100 text-foreground font-poppins;
+      @apply bg-zinc-200 text-foreground font-poppins;
     }
     p, label {
       @apply text-zinc-600;
@@ -86,4 +86,13 @@
     outline: 2px solid #4D88D8;
     outline-offset: 2px; /* Opcional: ajusta a distância do contorno */
   }
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 15px;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-zinc-800 rounded-full
 }

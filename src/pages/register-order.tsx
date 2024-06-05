@@ -1,16 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 
-import { toast } from 'sonner';
-import { format } from "date-fns";
-import { ptBR } from 'date-fns/locale'
-import { CalendarIcon, Plus } from "lucide-react";
-
 // import shadcn
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { CalendarIcon, ListOrdered, Plus } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
-
 import {
   Dialog,
   DialogContent,
@@ -29,33 +24,56 @@ import {
   InputOTPSeparator,
   InputOTPSlot,
 } from "@/components/ui/input-otp"
-import { StepSelect } from "@/components/application/step-select";
-import { TechnicalSelect } from "@/components/application/technical-select";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+import { Controller, useForm } from "react-hook-form"
+import { zodResolver } from '@hookform/resolvers/zod';
+import { ptBR } from "date-fns/locale";
+import { format } from "date-fns";
+import { createOrder } from "@/api/orders/create-order";
+import { CreateOrderData, createOrderSchema } from "@/lib/zod/create-order.zod";
+import { useAuth } from "@/hooks/useAuth";
+import { users } from "@/utils/mock";
 
 export function RegisterOrder() {
+  const { isOpen, setIsOpen, otp, handleOtpChangeCreateOrder } = useAuth()
+
+  const {
+    reset,
+    control,
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<CreateOrderData>({
+    resolver: zodResolver(createOrderSchema),
+  });
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const [isOpen, setIsOpen] = useState(true);
-  const [otp, setOtp] = useState("");
-  const [date, setDate] = useState<Date | undefined>(new Date())
+  const [date, setDate] = useState<Date | undefined>()
+  const [hasTogglePopover, setHasTogglePopover] = useState(false)
 
-  function handleOtpChange(value: string) {
-    setOtp(value);
-    if (value.length === 6) {
-      if (value === "123456") {
-        setIsOpen(false);
-        toast.success("Autenticação concluída")
-      } else {
-        toast.error("A chave inserida esta incorreta")
-      }
-    }
-  };
+  async function handleCreateOrder(data: CreateOrderData) {
+    await createOrder(data)
+
+    reset({
+      step: '',
+      model: '',
+      license_plate: '',
+      delivery_prevision: String(new Date()),
+      technical_id: '',
+    })
+  }
 
   useEffect(() => {
     if (isOpen) {
-      // Verifica se o dispositivo é um dispositivo móvel
       const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      // Foca no campo de entrada apenas se for um dispositivo móvel
       if (isMobile && inputRef.current) {
         inputRef.current.focus();
       }
@@ -71,71 +89,172 @@ export function RegisterOrder() {
       <div className="w-full mx-auto px-4">
         <div className="bg-white md:max-w-3xl mx-auto px-5 py-6 space-y-14 rounded-md relative top-[-50px]">
           <form
-            onSubmit={(e) => {
-              e.preventDefault()
-              toast.success('Pedido cadastraddo');
-            }}
+            onSubmit={handleSubmit(handleCreateOrder)}
             className="w-full flex flex-col mx-auto justify-center space-y-4"
           >
             <div className="space-y-2">
               <label className="font-medium">Placa <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
               <Input
+                {...register("license_plate")}
                 placeholder="Digite a placa..."
               />
+
+              {errors.license_plate && (
+                <span className="text-xs text-red-500 mt-3">
+                  {errors.license_plate.message}
+                </span>
+              )}
             </div>
 
             <div className="space-y-2">
               <label className="font-medium">Modelo do carro <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
               <Input
+                {...register("model")}
+                className="uppercase"
                 placeholder="Digite o modelo do carro..."
               />
+
+              {errors.model && (
+                <span className="text-xs text-red-500 mt-3">
+                  {errors.model.message}
+                </span>
+              )}
             </div>
 
             <div className="w-full flex flex-col items-start space-y-2">
               <label className="font-medium">Previsão de entrega <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
-              <Popover >
-                <PopoverTrigger asChild>
-                  <Button
-                    variant={"outline"}
-                    className={cn(
-                      "w-full justify-start text-left font-normal",
-                      !date && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "d 'de' MMMM", { locale: ptBR }) : <span className="text-zinc-500">Pick a date</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={date}
-                    onSelect={setDate ?? ''}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
+              <Controller
+                name="delivery_prevision"
+                control={control}
+                render={({ field }) => (
+                  <Popover open={hasTogglePopover}>
+                    <PopoverTrigger asChild>
+                      <Button
+                        onClick={() => {
+                          setHasTogglePopover(!hasTogglePopover);
+                        }}
+                        variant={"outline"}
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !date && "text-muted-foreground"
+                        )}
+                      >
+                        <CalendarIcon className="mr-2 h-4 w-4" />
+                        {date ? format(date, "dd 'de' MMMM 'de' yyyy", { locale: ptBR }) : <span className="text-zinc-500">Selecione uma data</span>}
+
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0">
+                      <Calendar
+                        locale={ptBR}
+                        mode="single"
+                        selected={date}
+                        onSelect={((date) => {
+                          setHasTogglePopover(!hasTogglePopover)
+                          setDate(date)
+                          field.onChange(String(date))
+                        })}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                )}
+              />
+
+              {errors.delivery_prevision && (
+                <span className="text-xs text-red-500 mt-3">
+                  {errors.delivery_prevision.message}
+                </span>
+              )}
             </div>
 
             <div className="w-full space-y-2">
               <label className="font-medium">Etapa <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
-              <StepSelect />
+              <Controller
+                name="step"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value}
+                    onValueChange={(value) => field.onChange(value)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Selecione a etapa" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="Análise">Análise</SelectItem>
+                        <SelectItem value="Orçamento">Orçamento</SelectItem>
+                        <SelectItem value="Execução">Execução</SelectItem>
+                        <SelectItem value="Lavação">Lavação</SelectItem>
+                        <SelectItem value="Geometria">Geometria</SelectItem>
+                        <SelectItem value="Aguardando">Aguardando</SelectItem>
+                        <SelectItem value="Finalizado">Finalizado</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+
+              {errors.step && (
+                <span className="text-xs text-red-500 mt-3">
+                  {errors.step.message}
+                </span>
+              )}
             </div>
 
             <div className="w-full space-y-2">
               <label className="font-medium bri">Técnico <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
-              <TechnicalSelect />
+              <Controller
+                name="technical_id"
+                control={control}
+                render={({ field }) => (
+                  <Select
+                    value={field.value}
+                    onValueChange={(value) => field.onChange(value)}
+                  >
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Selecione o técnico" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {users.filter(user => user.role === 'technical').map(user => {
+                          return (
+                            <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
+                          )
+                        })}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+                )}
+              />
+              {errors.technical_id && (
+                <span className="text-xs text-red-500 mt-3">
+                  {errors.technical_id.message}
+                </span>
+              )}
             </div>
 
-            <Button
-              type="submit"
+            <div className="flex items-center gap-2">
+              <Button type="button" className="bg-zinc-700 flex-1" onClick={() => window.location.href = '/pedidos'}>
+                <ListOrdered className="size-4 mr-2" />
+                Ir para tela de pedidos
+              </Button>
 
-              className="bg-zinc-700"
-            >
-              <Plus />
-              Cadatrar
-            </Button>
-
+              <Button
+                type="submit"
+                className="bg-zinc-700 flex-1"
+              >
+                {isSubmitting ? (
+                  <div className="w-5 h-5 border-2 border-zinc-800 animate-spin border-t-white rounded-full" />
+                ) : (
+                  <>
+                    <Plus className="size-4 mr-2" />
+                    <span>Cadastrar pedido</span>
+                  </>
+                )}
+              </Button>
+            </div>
           </form>
         </div>
       </div>
@@ -148,7 +267,7 @@ export function RegisterOrder() {
           <div className="w-full flex items-center justify-center">
             <InputOTP
               value={otp}
-              onChange={handleOtpChange}
+              onChange={(value) => handleOtpChangeCreateOrder(value, '/')}
               maxLength={6}
             >
               <InputOTPGroup>
@@ -172,16 +291,3 @@ export function RegisterOrder() {
     </main>
   )
 }
-
-// Preciso mostrar em tela todos os pedidos cadastrados
-
-// Nesta tela caso va na url o parametro ?tecnico:BernardoAlvesPadilha
-// carregar direto os pedidos deste usuário
-
-// Quando a atendente carregar a tela e pedidos pedir a senha e mostrar todos
-
-// colocar cards com diferentes cores para cada etapa do pedido
-
-// tudo na url /pedidos
-
-// Considerar colocar um menubar nas telas para fazer transição entre telas
