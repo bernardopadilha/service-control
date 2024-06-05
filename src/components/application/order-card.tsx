@@ -1,4 +1,4 @@
-import { CandlestickChart, Car, CheckCheck, CircleDollarSign, Drill, ShowerHead, TimerOff } from "lucide-react"
+import { CandlestickChart, Car, Check, CheckCheck, CircleDollarSign, Drill, Loader2, ShowerHead, TimerOff } from "lucide-react"
 
 import {
   Card,
@@ -14,10 +14,15 @@ import {
   SelectGroup,
   SelectItem,
   SelectTrigger,
+  SelectValue,
 } from "@/components/ui/select"
 import { OrderProps } from "@/api/orders/create-order";
 import { UpdateOrder } from "@/api/orders/update-order";
-import { Dispatch } from "react";
+import { Dispatch, useState } from "react";
+import { Button } from "../ui/button";
+import { supabase } from "@/api/supabase";
+import { toast } from "sonner";
+import { users } from "@/utils/mock";
 
 interface OrderCardProps {
   step_type: string;
@@ -32,6 +37,8 @@ interface OrderCardProps {
 }
 
 export function OrderCard({ step_type, technical_id, type, orders, onFindAllOrders, isLoadingOrders, setOrderSelected, onToggleDialogDeliveryPrevision }: OrderCardProps) {
+  const [isLoadingDeleteOrder, setIsLoadingDeleteOrder] = useState(false)
+
   const iconsMap: any = {
     "Análise": <CandlestickChart size={32} className="text-purple-400" />,
     "Orçamento": <CircleDollarSign size={32} className="text-orange-500" />,
@@ -40,6 +47,29 @@ export function OrderCard({ step_type, technical_id, type, orders, onFindAllOrde
     "Geometria": <Car size={32} className="text-yellow-900/80" />,
     "Aguardando": <TimerOff size={32} className="text-red-400/80" />,
     "Finalizado": <CheckCheck size={32} className="text-green-500" />,
+  }
+
+  async function handleUpdateTechnical(order_id: number, update_technical_id: string) {
+    const {error} = await supabase.from('orders').update({
+      technical_id: update_technical_id,
+    }).eq('id', order_id)
+
+    if (error) {
+      toast.error(error.message)
+      throw new Error(error.message)
+    }
+
+    toast.success('Mudança de técnico realizada com sucesso')
+  }
+
+  async function handleDeleteOrder(orderId: number) {
+    if (window.confirm('Você tem certeza que deseja entregar esse veículo')) {
+      setIsLoadingDeleteOrder(true)
+      await supabase.from('orders').delete().eq('id', orderId)
+      setIsLoadingDeleteOrder(false)
+      onFindAllOrders()
+      toast.success('Veículo entregue com sucesso!')
+    }
   }
 
   return (
@@ -92,12 +122,16 @@ export function OrderCard({ step_type, technical_id, type, orders, onFindAllOrde
               </CardContent>
               <CardFooter className="flex flex-col items-start gap-2">
                 <label className="text-sm font-medium">Troque a etapa deste carro</label>
-                <Select disabled={isLoadingOrders} value={order.step} onValueChange={async (value) => {
-                  await UpdateOrder(order, value)
-                  setOrderSelected(order)
-                  await onFindAllOrders()
-                  onToggleDialogDeliveryPrevision()
-                }}>
+                <Select 
+                  disabled={isLoadingOrders} 
+                  value={order.step} 
+                  onValueChange={async (value) => {
+                    await UpdateOrder(order, value)
+                    setOrderSelected(order)
+                    await onFindAllOrders()
+                    onToggleDialogDeliveryPrevision()
+                  }}
+                >
                   <SelectTrigger className="w-full flex">
                     {order.step}
                   </SelectTrigger>
@@ -113,6 +147,30 @@ export function OrderCard({ step_type, technical_id, type, orders, onFindAllOrde
                     </SelectGroup>
                   </SelectContent>
                 </Select>
+
+                <Select value={order.technical_id} onValueChange={async (value) => {
+                  await handleUpdateTechnical(order.id, value)
+                  await onFindAllOrders()
+                }}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Selecione o técnico" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      {users.filter(user => user.role === 'technical').map(user => {
+                        return (
+                          <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
+                        )
+                      })}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+
+                {order.step === 'Finalizado' && (
+                  <Button disabled={isLoadingDeleteOrder} onClick={() => handleDeleteOrder(order.id)} type="button" className="w-full"><Check className="size-4 mr-2" /> {isLoadingDeleteOrder && (
+                    <Loader2 className="size-4 mr-2 animate-spin" />
+                  )} Entregar carro</Button>
+                )}
               </CardFooter>
             </Card>
           )

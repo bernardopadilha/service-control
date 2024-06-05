@@ -8,7 +8,7 @@ export const router = createBrowserRouter([
     element: <RegisterOrder />
   },
   {
-    path: '/pedidos',
+    path: '/tickets',
     element: <Orders />
   }
 ])

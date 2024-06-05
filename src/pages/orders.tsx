@@ -31,7 +31,7 @@ import { toast } from "sonner";
 import { OrderProps } from "@/api/orders/create-order";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, Loader2 } from "lucide-react";
+import { ArrowLeft, CalendarIcon, Loader2 } from "lucide-react";
 import { addDays, format, subDays } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
@@ -100,7 +100,7 @@ export function Orders() {
   }, [])
 
   return (
-    <main className=" w-full flex flex-col items-center justify-start">
+    <main className="w-full flex flex-col items-center justify-start">
       <Dialog open={isToggleDialogUpdateDeliveryPrevision} onOpenChange={() => setIsToggleDialogUpdateDeliveryPrevision(!isToggleDialogUpdateDeliveryPrevision)}>
         <DialogContent>
           <DialogHeader>
@@ -147,13 +147,17 @@ export function Orders() {
         </DialogContent>
       </Dialog>
 
-      <div className="w-full h-[220px] flex flex-col items-center justify-end gap-6 p-2 md:p-4 bg-zinc-800">
+      <div className="w-full h-auto flex flex-col items-center justify-end gap-6 p-2 md:p-4 bg-zinc-800">
         <div className="space-y-1 flex flex-col items-center">
-          <h1 className="uppercase text-3xl text-zinc-50 font-semibold">Pedidos</h1>
-          <p className="text-zinc-50 font-medium">Aqui você tem acesso aos pedidos</p>
+          <h1 className="uppercase text-3xl text-zinc-50 font-semibold">Tickets</h1>
+          <p className="text-zinc-50 font-medium">Aqui você tem acesso aos tickets</p>
         </div> 
 
         <div className="max-w-7xl pl-4 mx-auto w-full md:flex-row flex flex-col items-center justify-center gap-2">
+          <Button type="button" className="w-full" onClick={() => window.location.href = '/'}>
+            <ArrowLeft className="size-4 mr-2" />
+            Voltar para a tela de cadastrar ticket
+          </Button>
           <Select value={technical} onValueChange={(value) => setTechnical(value)}>
             <SelectTrigger className="w-full">
               <SelectValue placeholder="Selecione o técnico" />
@@ -348,18 +352,18 @@ export function Orders() {
           </DialogHeader>
           <div className="w-full flex items-center justify-center">
             <InputOTP
-              value={otp}
-         
-              onChange={(value) => {
-                handleOtpChangeOrders(value, '/pedidos')
-
+              value={otp}  
+              onChange={async (value) => {
+                handleOtpChangeOrders(value, '/tickets')
                 if (value.length === 6) {
                   const user = users.find(user => user.passwd === value)
-                  
+                   
                   if (user) {
-                    setTechnical(user.id)
-                  } else {
-                    setTechnical('allTechnical')
+                    if(user.role === 'technical'){
+                      setTechnical(user.id)
+                    } else {
+                      setTechnical('allTechnical')
+                    }
                   }
                 }
               }}
