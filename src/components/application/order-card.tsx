@@ -1,8 +1,5 @@
 import { CandlestickChart, Car, CheckCheck, CircleDollarSign, Drill, ShowerHead, TimerOff } from "lucide-react"
 
-import { format } from "date-fns";
-import { ptBR } from "date-fns/locale";
-
 import {
   Card,
   CardContent,
@@ -34,7 +31,7 @@ interface OrderCardProps {
   onToggleDialogDeliveryPrevision: () => void
 }
 
-export function OrderCard({ step_type, technical_id, type, orders, onFindAllOrders, setDate, isLoadingOrders, setOrderSelected, onToggleDialogDeliveryPrevision }: OrderCardProps) {
+export function OrderCard({ step_type, technical_id, type, orders, onFindAllOrders, isLoadingOrders, setOrderSelected, onToggleDialogDeliveryPrevision }: OrderCardProps) {
   const iconsMap: any = {
     "Análise": <CandlestickChart size={32} className="text-purple-400" />,
     "Orçamento": <CircleDollarSign size={32} className="text-orange-500" />,

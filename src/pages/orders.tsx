@@ -151,7 +151,7 @@ export function Orders() {
         <div className="space-y-1 flex flex-col items-center">
           <h1 className="uppercase text-3xl text-zinc-50 font-semibold">Pedidos</h1>
           <p className="text-zinc-50 font-medium">Aqui você tem acesso aos pedidos</p>
-        </div>
+        </div> 
 
         <div className="max-w-7xl pl-4 mx-auto w-full md:flex-row flex flex-col items-center justify-center gap-2">
           <Select value={technical} onValueChange={(value) => setTechnical(value)}>
