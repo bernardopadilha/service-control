@@ -60,12 +60,6 @@ export const users: UserProps[] = [
     name: "Tiago Dalbosco",
     passwd: "036788",
   },
-  {
-    id: "8dc69331-32f0-4db6-9cfd-3df28a40e2a3",
-    role: "attendant",
-    name: "Tiago Dalbosco",
-    passwd: "123457",
-  },
 ]
 
 

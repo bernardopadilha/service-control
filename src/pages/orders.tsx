@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { OrderCard } from "@/components/application/order-card";
 import { Card } from "@/components/ui/card";
 
@@ -54,7 +55,7 @@ export function Orders() {
 
   async function findAllOrders() {
     setIsLoadingOrders(true)
-    let { data: ordersData, error } = await supabase
+    const { data: ordersData, error } = await supabase
       .from('orders')
       .select('*')
 
@@ -81,7 +82,7 @@ export function Orders() {
       setIsToggleDialogUpdateDeliveryPrevision(!isToggleDialogUpdateDeliveryPrevision)
       toast.success('Previsão de entrega atualizada com sucesso!')
       setIsLoadingUpdatePrevisionDate(false)
-    }
+     } 
   }
 
   useEffect(() => {

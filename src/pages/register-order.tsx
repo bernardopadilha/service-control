@@ -82,9 +82,14 @@ export function RegisterOrder() {
 
   return (
     <main className="w-full flex flex-col items-center justify-start h-screen absolute">
-      <div className="w-full space-y-1 flex flex-col items-center justify-center bg-zinc-800 h-[220px]">
+      <div className="w-full space-y-1 pb-10 flex flex-col items-center justify-center bg-zinc-800 h-[220px]">
         <h1 className="uppercase text-3xl text-zinc-50 font-semibold">Cadastro de ticket</h1>
         <p className="text-zinc-50 font-medium">Aqui você casdastra novos tickets</p>
+        
+        <Button type="button" className="bg-zinc-700" onClick={() => window.location.href = '/tickets'}>
+          <ListOrdered className="size-4 mr-2" />
+          Ir para tela de tickets
+        </Button>
       </div>
       <div className="w-full mx-auto px-4">
         <div className="bg-white md:max-w-3xl mx-auto px-5 py-6 space-y-14 rounded-md relative top-[-50px]">
@@ -236,10 +241,7 @@ export function RegisterOrder() {
             </div>
 
             <div className="flex flex-col md:flex-row items-center gap-2">
-              <Button type="button" className="w-full bg-zinc-700 flex-1" onClick={() => window.location.href = '/tickets'}>
-                <ListOrdered className="size-4 mr-2" />
-                Ir para tela de tickets
-              </Button>
+
 
               <Button
                 type="submit"
