@@ -12,6 +12,7 @@ export interface OrderProps {
   created_at: string,
   step: string,
   technical_id: string,
+  observation: string
 }
 
 export async function createOrder(orderData: CreateOrderData) {
@@ -26,6 +27,7 @@ export async function createOrder(orderData: CreateOrderData) {
         delivery_prevision: new Date(orderData.delivery_prevision),
         step: orderData.step,
         technical_id: String(orderData.technical_id),
+        observation: ''
       },
     ])
     .select()

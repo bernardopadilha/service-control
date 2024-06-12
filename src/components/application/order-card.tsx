@@ -60,7 +60,20 @@ export function OrderCard({ step_type, technical_id, type, orders, onFindAllOrde
       throw new Error(error.message)
     }
 
-    toast.success('Mudança de técnico realizada com sucesso')
+    toast.success('Mudança de técnico realizada com sucesso!')
+  }
+
+  async function handleUpdateObservation(order_id: number, update_observation_value: string) {
+    const { error } = await supabase.from('orders').update({
+      observation: update_observation_value
+    }).eq('id', order_id)
+
+    if (error) {
+      toast.error(error.message)
+      throw new Error(error.message)
+    }
+
+    toast.success('Mudança de aguardando realizado com sucesso!')
   }
 
   async function handleDeleteOrder(orderId: number) {
@@ -95,7 +108,7 @@ export function OrderCard({ step_type, technical_id, type, orders, onFindAllOrde
                 <div className="space-y-1">
                   <CardTitle className="text-zinc-600">{order.model}</CardTitle>
                   <CardDescription className="whitespace-nowrap">Data de entrada: <span className="text-base font-semibold">{format(new Date(order.created_at), 'dd/MM/yyyy')}</span></CardDescription>
-                  <CardDescription className="whitespace-nowrap">Previsão: <span className="text-base font-semibold">{order.delivery_prevision.split('-')[2] + '/' + order.delivery_prevision.split('-')[1] + '/' + order.delivery_prevision.split('-')[0]}</span></CardDescription>
+                  <CardDescription className="whitespace-nowrap ">Previsão: <span className="text-black font-bold">{order.delivery_prevision.split('-')[2] + '/' + order.delivery_prevision.split('-')[1] + '/' + order.delivery_prevision.split('-')[0]}</span></CardDescription>
                 </div>
                 {iconsMap[order.step] || null}
               </CardHeader>
@@ -120,59 +133,83 @@ export function OrderCard({ step_type, technical_id, type, orders, onFindAllOrde
                   </div>
                 </div>
               </CardContent>
-                  <CardFooter className="flex justify-center gap-2">
-                    <div className="flex flex-col gap-2">
-                      <label className="text-sm font-medium">Troque a etapa deste carro</label>
-                      <Select
-                        disabled={isLoadingOrders}
-                        value={order.step}
-                        onValueChange={async (value) => {
-                          await UpdateOrder(order, value)
-                          setOrderSelected(order)
-                          await onFindAllOrders()
-                          onToggleDialogDeliveryPrevision()
-                        }}
-                      >
-                        <SelectTrigger className="w-full flex">
-                          {order.step}
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem value="Análise">Análise</SelectItem>
-                            <SelectItem value="Orçamento">Orçamento</SelectItem>
-                            <SelectItem value="Execução">Execução</SelectItem>
-                            <SelectItem value="Aguardando">Aguardando</SelectItem>
-                            <SelectItem value="Finalizado">Finalizado</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+              <CardFooter className="flex justify-center gap-2">
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium">Troque a etapa deste carro</label>
+                  <Select
+                    disabled={isLoadingOrders}
+                    value={order.step}
+                    onValueChange={async (value) => {
+                      await UpdateOrder(order, value)
+                      setOrderSelected(order)
+                      await onFindAllOrders()
+                      onToggleDialogDeliveryPrevision()
+                    }}
+                  >
+                    <SelectTrigger className="w-full flex">
+                      {order.step}
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem value="Análise">Análise</SelectItem>
+                        <SelectItem value="Orçamento">Orçamento</SelectItem>
+                        <SelectItem value="Execução">Execução</SelectItem>
+                        <SelectItem value="Aguardando">Aguardando</SelectItem>
+                        <SelectItem value="Finalizado">Finalizado</SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
 
-                      <Select value={order.technical_id} onValueChange={async (value) => {
-                        await handleUpdateTechnical(order.id, value)
+                  <Select value={order.technical_id} onValueChange={async (value) => {
+                    await handleUpdateTechnical(order.id, value)
+                    await onFindAllOrders()
+                  }}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Selecione o técnico" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        {users.filter(user => user.role === 'technical').map(user => {
+                          return (
+                            <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
+                          )
+                        })}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
+
+                  {step_type === 'Aguardando' && (
+                    <Select
+                      disabled={isLoadingOrders}
+                      onValueChange={async (value) => {
+                        console.log(value)
+                        await handleUpdateObservation(order.id, value)
                         await onFindAllOrders()
-                      }}>
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Selecione o técnico" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            {users.filter(user => user.role === 'technical').map(user => {
-                              return (
-                                <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
-                              )
-                            })}
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
+                      }}
+                      value={order.observation === null ? '' : order.observation}
+                    >
+                      <SelectTrigger className="w-full flex">
+                        <SelectValue placeholder='Sem observação'  />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectItem value="Sem observação">Sem observação</SelectItem>
+                          <SelectItem value="Lavação">Lavação</SelectItem>
+                          <SelectItem value="Geometria">Geometria</SelectItem>
+                          <SelectItem value="Peças">Peças</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  )}
 
-                      {order.step === 'Finalizado' && (
-                        <Button disabled={isLoadingDeleteOrder} onClick={() => handleDeleteOrder(order.id)} type="button" className="w-full"><Check className="size-4 mr-2" /> {isLoadingDeleteOrder && (
-                          <Loader2 className="size-4 mr-2 animate-spin" />
-                        )} Entregar carro</Button>
-                      )}
-                    </div>
-                  </CardFooter>
-           
+                  {order.step === 'Finalizado' && (
+                    <Button disabled={isLoadingDeleteOrder} onClick={() => handleDeleteOrder(order.id)} type="button" className="w-full"><Check className="size-4 mr-2" /> {isLoadingDeleteOrder && (
+                      <Loader2 className="size-4 mr-2 animate-spin" />
+                    )} Entregar carro</Button>
+                  )}
+                </div>
+              </CardFooter>
+
 
             </Card>
           )
