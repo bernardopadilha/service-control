@@ -191,8 +191,6 @@ export function RegisterOrder() {
                         <SelectItem value="Análise">Análise</SelectItem>
                         <SelectItem value="Orçamento">Orçamento</SelectItem>
                         <SelectItem value="Execução">Execução</SelectItem>
-                        <SelectItem value="Lavação">Lavação</SelectItem>
-                        <SelectItem value="Geometria">Geometria</SelectItem>
                         <SelectItem value="Aguardando">Aguardando</SelectItem>
                         <SelectItem value="Finalizado">Finalizado</SelectItem>
                       </SelectGroup>

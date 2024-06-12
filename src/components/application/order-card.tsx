@@ -1,4 +1,5 @@
-import { CandlestickChart, Car, Check, CheckCheck, CircleDollarSign, Drill, Loader2, ShowerHead, TimerOff } from "lucide-react"
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { CandlestickChart, Check, CheckCheck, CircleDollarSign, Drill, Loader2, TimerOff } from "lucide-react"
 
 import {
   Card,
@@ -23,6 +24,7 @@ import { Button } from "../ui/button";
 import { supabase } from "@/api/supabase";
 import { toast } from "sonner";
 import { users } from "@/utils/mock";
+import { format } from "date-fns";
 
 interface OrderCardProps {
   step_type: string;
@@ -43,14 +45,13 @@ export function OrderCard({ step_type, technical_id, type, orders, onFindAllOrde
     "Análise": <CandlestickChart size={32} className="text-purple-400" />,
     "Orçamento": <CircleDollarSign size={32} className="text-orange-500" />,
     "Execução": <Drill size={32} className="text-amber-300" />,
-    "Lavação": <ShowerHead size={32} className="text-blue-400" />,
-    "Geometria": <Car size={32} className="text-yellow-900/80" />,
     "Aguardando": <TimerOff size={32} className="text-red-400/80" />,
     "Finalizado": <CheckCheck size={32} className="text-green-500" />,
   }
 
+
   async function handleUpdateTechnical(order_id: number, update_technical_id: string) {
-    const {error} = await supabase.from('orders').update({
+    const { error } = await supabase.from('orders').update({
       technical_id: update_technical_id,
     }).eq('id', order_id)
 
@@ -87,15 +88,14 @@ export function OrderCard({ step_type, technical_id, type, orders, onFindAllOrde
               order.step === 'Análise' ? 'border-b-purple-500/50' :
                 order.step === 'Orçamento' ? 'border-b-orange-500/50' :
                   order.step === 'Execução' ? 'border-b-amber-300/50' :
-                    order.step === 'Lavação' ? 'border-b-blue-500/50' :
-                      order.step === 'Geometria' ? 'border-b-yellow-900/50' :
-                        order.step === 'Aguardando' && 'border-b-red-500/50'
+                    order.step === 'Aguardando' && 'border-b-red-500/50'
               } w-full border-b-8 mb-4`}
             >
               <CardHeader>
                 <div className="space-y-1">
                   <CardTitle className="text-zinc-600">{order.model}</CardTitle>
-                  <CardDescription className="whitespace-nowrap">Entrega: <span className="text-base font-semibold">{order.delivery_prevision.split('-')[2] + '/' + order.delivery_prevision.split('-')[1] + '/' + order.delivery_prevision.split('-')[0]}</span></CardDescription>
+                  <CardDescription className="whitespace-nowrap">Data de entrada: <span className="text-base font-semibold">{format(new Date(order.created_at), 'dd/MM/yyyy')}</span></CardDescription>
+                  <CardDescription className="whitespace-nowrap">Previsão: <span className="text-base font-semibold">{order.delivery_prevision.split('-')[2] + '/' + order.delivery_prevision.split('-')[1] + '/' + order.delivery_prevision.split('-')[0]}</span></CardDescription>
                 </div>
                 {iconsMap[order.step] || null}
               </CardHeader>
@@ -120,58 +120,60 @@ export function OrderCard({ step_type, technical_id, type, orders, onFindAllOrde
                   </div>
                 </div>
               </CardContent>
-              <CardFooter className="flex flex-col items-start gap-2">
-                <label className="text-sm font-medium">Troque a etapa deste carro</label>
-                <Select 
-                  disabled={isLoadingOrders} 
-                  value={order.step} 
-                  onValueChange={async (value) => {
-                    await UpdateOrder(order, value)
-                    setOrderSelected(order)
-                    await onFindAllOrders()
-                    onToggleDialogDeliveryPrevision()
-                  }}
-                >
-                  <SelectTrigger className="w-full flex">
-                    {order.step}
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      <SelectItem value="Análise">Análise</SelectItem>
-                      <SelectItem value="Orçamento">Orçamento</SelectItem>
-                      <SelectItem value="Execução">Execução</SelectItem>
-                      <SelectItem value="Lavação">Lavação</SelectItem>
-                      <SelectItem value="Geometria">Geometria</SelectItem>
-                      <SelectItem value="Aguardando">Aguardando</SelectItem>
-                      <SelectItem value="Finalizado">Finalizado</SelectItem>
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                  <CardFooter className="flex justify-center gap-2">
+                    <div className="flex flex-col gap-2">
+                      <label className="text-sm font-medium">Troque a etapa deste carro</label>
+                      <Select
+                        disabled={isLoadingOrders}
+                        value={order.step}
+                        onValueChange={async (value) => {
+                          await UpdateOrder(order, value)
+                          setOrderSelected(order)
+                          await onFindAllOrders()
+                          onToggleDialogDeliveryPrevision()
+                        }}
+                      >
+                        <SelectTrigger className="w-full flex">
+                          {order.step}
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem value="Análise">Análise</SelectItem>
+                            <SelectItem value="Orçamento">Orçamento</SelectItem>
+                            <SelectItem value="Execução">Execução</SelectItem>
+                            <SelectItem value="Aguardando">Aguardando</SelectItem>
+                            <SelectItem value="Finalizado">Finalizado</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
 
-                <Select value={order.technical_id} onValueChange={async (value) => {
-                  await handleUpdateTechnical(order.id, value)
-                  await onFindAllOrders()
-                }}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue placeholder="Selecione o técnico" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
-                      {users.filter(user => user.role === 'technical').map(user => {
-                        return (
-                          <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
-                        )
-                      })}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
+                      <Select value={order.technical_id} onValueChange={async (value) => {
+                        await handleUpdateTechnical(order.id, value)
+                        await onFindAllOrders()
+                      }}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Selecione o técnico" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            {users.filter(user => user.role === 'technical').map(user => {
+                              return (
+                                <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
+                              )
+                            })}
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
 
-                {order.step === 'Finalizado' && (
-                  <Button disabled={isLoadingDeleteOrder} onClick={() => handleDeleteOrder(order.id)} type="button" className="w-full"><Check className="size-4 mr-2" /> {isLoadingDeleteOrder && (
-                    <Loader2 className="size-4 mr-2 animate-spin" />
-                  )} Entregar carro</Button>
-                )}
-              </CardFooter>
+                      {order.step === 'Finalizado' && (
+                        <Button disabled={isLoadingDeleteOrder} onClick={() => handleDeleteOrder(order.id)} type="button" className="w-full"><Check className="size-4 mr-2" /> {isLoadingDeleteOrder && (
+                          <Loader2 className="size-4 mr-2 animate-spin" />
+                        )} Entregar carro</Button>
+                      )}
+                    </div>
+                  </CardFooter>
+           
+
             </Card>
           )
         })}

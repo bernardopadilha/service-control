@@ -18,8 +18,6 @@ export function StepSelect() {
           <SelectItem value="análise">Análise</SelectItem>
           <SelectItem value="orçamento">Orçamento</SelectItem>
           <SelectItem value="execução">Execução</SelectItem>
-          <SelectItem value="lavação">Lavação</SelectItem>
-          <SelectItem value="geometria">Geometria</SelectItem>
           <SelectItem value="aguardando">Aguardando</SelectItem>
           <SelectItem value="finalizado">Finalizado</SelectItem>
         </SelectGroup>

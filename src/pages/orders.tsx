@@ -184,8 +184,6 @@ export function Orders() {
                 <SelectItem value="análise">Análise</SelectItem>
                 <SelectItem value="orçamento">Orçamento</SelectItem>
                 <SelectItem value="execução">Execução</SelectItem>
-                <SelectItem value="lavação">Lavação</SelectItem>
-                <SelectItem value="geometria">Geometria</SelectItem>
                 <SelectItem value="aguardando">Aguardando</SelectItem>
                 <SelectItem value="finalizado">Finalizado</SelectItem>
                 <SelectItem value="allStep">Todas Etapas</SelectItem>
@@ -224,20 +222,20 @@ export function Orders() {
               </div>
 
               {/* Lavação */}
-              <div className="w-full md:w-fit flex flex-col items-center gap-2">
+              {/* <div className="w-full md:w-fit flex flex-col items-center gap-2">
                 <Card className="w-full md:w-[400px] flex-shrink-0 flex items-center py-6 justify-center bg-blue-500/50 border-2 border-blue-500 text-zinc-50 text-xl font-semibold rounded-md">
                   LAVAÇÃO
                 </Card>
                 <OrderCard key={"Lavação"} step_type="Lavação" technical_id={technical} setDate={setDate} setOrderSelected={setOrderSelected} type="all" orders={orders} onFindAllOrders={findAllOrders} isLoadingOrders={isLoadingOrders} onToggleDialogDeliveryPrevision={() => setIsToggleDialogUpdateDeliveryPrevision(!isToggleDialogUpdateDeliveryPrevision)} />
-              </div>
+              </div> */}
 
               {/* Geometria */}
-              <div className="w-full md:w-fit flex flex-col items-center gap-2">
+              {/* <div className="w-full md:w-fit flex flex-col items-center gap-2">
                 <Card className="w-full md:w-[400px] flex-shrink-0 flex items-center py-6 justify-center bg-yellow-900/60 border-2 border-yellow-900 text-zinc-50 text-xl font-semibold rounded-md">
                   GEOMETRIA
                 </Card>
                 <OrderCard key={"Geometria"} step_type="Geometria" technical_id={technical} setDate={setDate} setOrderSelected={setOrderSelected} type="all" orders={orders} onFindAllOrders={findAllOrders} isLoadingOrders={isLoadingOrders} onToggleDialogDeliveryPrevision={() => setIsToggleDialogUpdateDeliveryPrevision(!isToggleDialogUpdateDeliveryPrevision)} />
-              </div>
+              </div> */}
 
               {/* Aguardando */}
               <div className="w-full md:w-fit flex flex-col items-center gap-2">
@@ -292,30 +290,6 @@ export function Orders() {
                   EXECUÇÃO
                 </Card>
                 <OrderCard key={"Execução"} step_type="Execução" technical_id={technical} setDate={setDate} setOrderSelected={setOrderSelected} type="single" orders={orders} onFindAllOrders={findAllOrders} isLoadingOrders={isLoadingOrders} onToggleDialogDeliveryPrevision={() => setIsToggleDialogUpdateDeliveryPrevision(!isToggleDialogUpdateDeliveryPrevision)} />
-              </div>
-            </>
-          }
-
-          {step === 'lavação' &&
-            <>
-              {/* Lavação */}
-              <div className="w-full flex flex-col items-start gap-2">
-                <Card className="w-full flex-shrink-0 flex items-center py-6 justify-center bg-blue-500/40 border-2 border-blue-400 text-zinc-50 text-xl font-semibold rounded-md">
-                  LAVAÇÃO
-                </Card>
-                <OrderCard key={"Lavação"} step_type="Lavação" technical_id={technical} setDate={setDate} setOrderSelected={setOrderSelected} type="single" orders={orders} onFindAllOrders={findAllOrders} isLoadingOrders={isLoadingOrders} onToggleDialogDeliveryPrevision={() => setIsToggleDialogUpdateDeliveryPrevision(!isToggleDialogUpdateDeliveryPrevision)} />
-              </div>
-            </>
-          }
-
-          {step === 'geometria' &&
-            <>
-              {/* Geometria */}
-              <div className="w-full flex flex-col items-center gap-2">
-                <Card className="w-full flex-shrink-0 flex items-center py-6 justify-center bg-yellow-900/60 border-2 border-yellow-900 text-zinc-50 text-xl font-semibold rounded-md">
-                  GEOMETRIA
-                </Card>
-                <OrderCard key={"Geometria"} step_type="Geometria" technical_id={technical} setDate={setDate} setOrderSelected={setOrderSelected} type="single" orders={orders} onFindAllOrders={findAllOrders} isLoadingOrders={isLoadingOrders} onToggleDialogDeliveryPrevision={() => setIsToggleDialogUpdateDeliveryPrevision(!isToggleDialogUpdateDeliveryPrevision)} />
               </div>
             </>
           }
