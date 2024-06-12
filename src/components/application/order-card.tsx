@@ -34,11 +34,12 @@ interface OrderCardProps {
   onFindAllOrders: () => void
   setDate: Dispatch<Date | undefined>
   isLoadingOrders: boolean
+  handleUpdatePrevisionDate?: () => void
   setOrderSelected: Dispatch<OrderProps | null>
   onToggleDialogDeliveryPrevision: () => void
 }
 
-export function OrderCard({ step_type, technical_id, type, orders, onFindAllOrders, isLoadingOrders, setOrderSelected, onToggleDialogDeliveryPrevision }: OrderCardProps) {
+export function OrderCard({ step_type, handleUpdatePrevisionDate, technical_id, type, orders, onFindAllOrders, isLoadingOrders, setOrderSelected, onToggleDialogDeliveryPrevision }: OrderCardProps) {
   const [isLoadingDeleteOrder, setIsLoadingDeleteOrder] = useState(false)
 
   const iconsMap: any = {
@@ -143,7 +144,14 @@ export function OrderCard({ step_type, technical_id, type, orders, onFindAllOrde
                       await UpdateOrder(order, value)
                       setOrderSelected(order)
                       await onFindAllOrders()
-                      onToggleDialogDeliveryPrevision()
+
+                      if (order.step === 'Orçamento') {
+                        onToggleDialogDeliveryPrevision()
+                      } else {
+                        if (handleUpdatePrevisionDate) {
+                          await handleUpdatePrevisionDate()
+                        }
+                      }
                     }}
                   >
                     <SelectTrigger className="w-full flex">

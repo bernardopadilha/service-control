@@ -210,7 +210,7 @@ export function Orders() {
                 <Card className="w-full md:w-[400px] flex-shrink-0 flex items-center py-6 justify-center bg-orange-400/70 border-2 border-orange-500 text-zinc-50 text-xl font-semibold rounded-md">
                   ORÇAMENTO
                 </Card>
-                <OrderCard key={"Orçamento"} step_type="Orçamento" technical_id={technical} setDate={setDate} setOrderSelected={setOrderSelected} type="all" orders={orders} onFindAllOrders={findAllOrders} isLoadingOrders={isLoadingOrders} onToggleDialogDeliveryPrevision={() => setIsToggleDialogUpdateDeliveryPrevision(!isToggleDialogUpdateDeliveryPrevision)} />
+                <OrderCard handleUpdatePrevisionDate={handleUpdatePrevisionDate} key={"Orçamento"} step_type="Orçamento" technical_id={technical} setDate={setDate} setOrderSelected={setOrderSelected} type="all" orders={orders} onFindAllOrders={findAllOrders} isLoadingOrders={isLoadingOrders} onToggleDialogDeliveryPrevision={() => setIsToggleDialogUpdateDeliveryPrevision(!isToggleDialogUpdateDeliveryPrevision)} />
               </div>
 
               {/* Execução */}
@@ -220,22 +220,6 @@ export function Orders() {
                 </Card>
                 <OrderCard key={"Execução"} step_type="Execução" technical_id={technical} setDate={setDate} setOrderSelected={setOrderSelected} type="all" orders={orders} onFindAllOrders={findAllOrders} isLoadingOrders={isLoadingOrders} onToggleDialogDeliveryPrevision={() => setIsToggleDialogUpdateDeliveryPrevision(!isToggleDialogUpdateDeliveryPrevision)} />
               </div>
-
-              {/* Lavação */}
-              {/* <div className="w-full md:w-fit flex flex-col items-center gap-2">
-                <Card className="w-full md:w-[400px] flex-shrink-0 flex items-center py-6 justify-center bg-blue-500/50 border-2 border-blue-500 text-zinc-50 text-xl font-semibold rounded-md">
-                  LAVAÇÃO
-                </Card>
-                <OrderCard key={"Lavação"} step_type="Lavação" technical_id={technical} setDate={setDate} setOrderSelected={setOrderSelected} type="all" orders={orders} onFindAllOrders={findAllOrders} isLoadingOrders={isLoadingOrders} onToggleDialogDeliveryPrevision={() => setIsToggleDialogUpdateDeliveryPrevision(!isToggleDialogUpdateDeliveryPrevision)} />
-              </div> */}
-
-              {/* Geometria */}
-              {/* <div className="w-full md:w-fit flex flex-col items-center gap-2">
-                <Card className="w-full md:w-[400px] flex-shrink-0 flex items-center py-6 justify-center bg-yellow-900/60 border-2 border-yellow-900 text-zinc-50 text-xl font-semibold rounded-md">
-                  GEOMETRIA
-                </Card>
-                <OrderCard key={"Geometria"} step_type="Geometria" technical_id={technical} setDate={setDate} setOrderSelected={setOrderSelected} type="all" orders={orders} onFindAllOrders={findAllOrders} isLoadingOrders={isLoadingOrders} onToggleDialogDeliveryPrevision={() => setIsToggleDialogUpdateDeliveryPrevision(!isToggleDialogUpdateDeliveryPrevision)} />
-              </div> */}
 
               {/* Aguardando */}
               <div className="w-full md:w-fit flex flex-col items-center gap-2">
@@ -277,7 +261,7 @@ export function Orders() {
                 <Card className="w-full flex-shrink-0 flex items-center py-6 justify-center bg-orange-500/40 border-2 border-orange-500 text-zinc-50 text-xl font-semibold rounded-md">
                   ORÇAMENTO
                 </Card>
-                <OrderCard key={"Orçamento"} step_type="Orçamento" technical_id={technical} setDate={setDate} setOrderSelected={setOrderSelected} type="single" orders={orders} onFindAllOrders={findAllOrders} isLoadingOrders={isLoadingOrders} onToggleDialogDeliveryPrevision={() => setIsToggleDialogUpdateDeliveryPrevision(!isToggleDialogUpdateDeliveryPrevision)} />
+                <OrderCard handleUpdatePrevisionDate={handleUpdatePrevisionDate} key={"Orçamento"} step_type="Orçamento" technical_id={technical} setDate={setDate} setOrderSelected={setOrderSelected} type="single" orders={orders} onFindAllOrders={findAllOrders} isLoadingOrders={isLoadingOrders} onToggleDialogDeliveryPrevision={() => setIsToggleDialogUpdateDeliveryPrevision(!isToggleDialogUpdateDeliveryPrevision)} />
               </div>
             </>
           }
