@@ -107,7 +107,7 @@ export function OrderCard({ step_type, handleUpdatePrevisionDate, technical_id, 
             >
               <CardHeader>
                 <div className="space-y-1">
-                  <CardTitle className="text-zinc-600">{order.model}</CardTitle>
+                  <CardTitle className="text-zinc-600 uppercase">{order.model}</CardTitle>
                   <CardDescription className="whitespace-nowrap">Data de entrada: <span className="text-base font-semibold">{format(new Date(order.created_at), 'dd/MM/yyyy')}</span></CardDescription>
                   <CardDescription className="whitespace-nowrap ">Previsão: <span className="text-black font-bold">{order.delivery_prevision.split('-')[2] + '/' + order.delivery_prevision.split('-')[1] + '/' + order.delivery_prevision.split('-')[0]}</span></CardDescription>
                 </div>

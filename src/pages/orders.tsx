@@ -57,7 +57,7 @@ export function Orders() {
     setIsLoadingOrders(true)
     const { data: ordersData, error } = await supabase
       .from('orders')
-      .select('*')
+      .select('*').order('created_at', { ascending: true })
 
 
     if (error) {
