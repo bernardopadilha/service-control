@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { OrderCard } from "@/components/application/order-card";
 import { Card } from "@/components/ui/card";
@@ -99,6 +100,28 @@ export function Orders() {
       }
     }
   }, [])
+
+  useEffect(() => {
+    const channel = supabase
+    .channel('tickets')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'orders'
+      },
+    () => {
+      findAllOrders()
+    }
+  )
+  .subscribe()
+
+  return () => {
+    channel.unsubscribe()
+  }
+  })
+
 
   return (
     <main className="w-full flex flex-col items-center justify-start">
