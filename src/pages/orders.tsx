@@ -171,7 +171,7 @@ export function Orders() {
         </DialogContent>
       </Dialog>
 
-      <div className="w-full h-auto flex flex-col items-center justify-end gap-6 p-2 md:p-4 bg-zinc-800">
+      <div className="w-full h-auto md:h-[200px] flex flex-col items-center justify-end gap-6 p-2 md:p-4 bg-zinc-800">
         <div className="space-y-1 flex flex-col items-center">
           <h1 className="uppercase text-3xl text-zinc-50 font-semibold">Tickets</h1>
           <p className="text-zinc-50 font-medium">Aqui você tem acesso aos tickets</p>
@@ -216,7 +216,7 @@ export function Orders() {
         </div>
       </div>
 
-      <div className=" w-full px-4 mt-4 flex flex-col md:flex-row justify-center md:justify-normal overflow-x-auto">
+      <div className="w-full h-[calc(100vh-220px)] px-4 mt-4 flex flex-col md:flex-row justify-center md:justify-normal overflow-x-auto">
         <div className={`${step === 'allStep' ? 'md:w-auto' : 'md:w-full'} flex flex-col md:flex-row items-start justify-center md:justify-normal gap-8 pb-2`}>
           {step === 'allStep' &&
             <>
