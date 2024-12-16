@@ -26,6 +26,7 @@ export async function createOrder(orderData: CreateOrderData) {
         exit_date: null,
         delivery_prevision: new Date(orderData.delivery_prevision),
         step: orderData.step,
+        car_parts_date: orderData.car_parts_date,
         technical_id: String(orderData.technical_id),
         observation: ''
       },

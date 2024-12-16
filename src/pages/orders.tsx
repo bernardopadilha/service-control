@@ -204,7 +204,6 @@ export function Orders() {
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem value="análise">Análise</SelectItem>
                 <SelectItem value="orçamento">Orçamento</SelectItem>
                 <SelectItem value="execução">Execução</SelectItem>
                 <SelectItem value="aguardando">Aguardando</SelectItem>
@@ -220,13 +219,7 @@ export function Orders() {
         <div className={`${step === 'allStep' ? 'md:w-auto' : 'md:w-full'} flex flex-col md:flex-row items-start justify-center md:justify-normal gap-8 pb-2`}>
           {step === 'allStep' &&
             <>
-              {/* Análise */}
-              <div className="w-full md:w-fit flex flex-col items-center gap-2">
-                <Card className="w-full md:w-[400px] flex-shrink-0 flex items-center py-6 justify-center bg-purple-500/40 border-2 border-purple-500 text-zinc-50 text-xl font-semibold rounded-md">
-                  ANÁLISE
-                </Card>
-                <OrderCard key={"Análise"} step_type="Análise" technical_id={technical} setDate={setDate} setOrderSelected={setOrderSelected} type="all" orders={orders} onFindAllOrders={findAllOrders} isLoadingOrders={isLoadingOrders} onToggleDialogDeliveryPrevision={() => setIsToggleDialogUpdateDeliveryPrevision(!isToggleDialogUpdateDeliveryPrevision)} />
-              </div>
+          
 
               {/* Orçamento */}
               <div className="w-full md:w-fit flex flex-col items-center gap-2">
@@ -258,21 +251,6 @@ export function Orders() {
                   FINALIZADO
                 </Card>
                 <OrderCard key={"Finalizado"} step_type="Finalizado" technical_id={technical} setDate={setDate} setOrderSelected={setOrderSelected} type="all" orders={orders} onFindAllOrders={findAllOrders} isLoadingOrders={isLoadingOrders} onToggleDialogDeliveryPrevision={() => setIsToggleDialogUpdateDeliveryPrevision(!isToggleDialogUpdateDeliveryPrevision)} />
-              </div>
-            </>
-          }
-
-          {step === 'análise' &&
-            <>
-              {/* Análise */}
-              <div className="w-full flex flex-col items-start gap-2">
-                <Card className="w-full flex-shrink-0 flex items-center py-6 justify-center bg-purple-500/40 border-2 border-purple-500 text-zinc-50 text-xl font-semibold rounded-md">
-                  ANÁLISE
-                </Card>
-
-                <div className="w-full overflow-auto">
-                  <OrderCard key="Análise" step_type="Análise" technical_id={technical} setDate={setDate} setOrderSelected={setOrderSelected} type="single" orders={orders} onFindAllOrders={findAllOrders} isLoadingOrders={isLoadingOrders} onToggleDialogDeliveryPrevision={() => setIsToggleDialogUpdateDeliveryPrevision(!isToggleDialogUpdateDeliveryPrevision)} />
-                </div>
               </div>
             </>
           }

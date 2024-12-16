@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
 // import shadcn
-import { cn } from "@/lib/utils";
+
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { CalendarIcon, ListOrdered, Plus } from "lucide-react";
-import { Calendar } from "@/components/ui/calendar";
+import { ListOrdered, Plus } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -13,11 +12,6 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
 import {
   InputOTP,
   InputOTPGroup,
@@ -35,12 +29,12 @@ import {
 
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from '@hookform/resolvers/zod';
-import { ptBR } from "date-fns/locale";
-import { format } from "date-fns";
 import { createOrder } from "@/api/orders/create-order";
 import { CreateOrderData, createOrderSchema } from "@/lib/zod/create-order.zod";
 import { useAuth } from "@/hooks/useAuth";
 import { users } from "@/utils/mock";
+import { DateTimePickerCarParts } from "@/components/ui/date-time-picker-car-parts";
+import { DateTimePickerDeliveryPrevision } from "@/components/ui/date-time-picker-delivery-prevision";
 
 export function RegisterOrder() {
   const { isOpen, setIsOpen, otp, handleOtpChangeCreateOrder } = useAuth()
@@ -56,8 +50,6 @@ export function RegisterOrder() {
   });
 
   const inputRef = useRef<HTMLInputElement>(null);
-  const [date, setDate] = useState<Date | undefined>()
-  const [hasTogglePopover, setHasTogglePopover] = useState(false)
 
   async function handleCreateOrder(data: CreateOrderData) {
     await createOrder(data)
@@ -127,17 +119,30 @@ export function RegisterOrder() {
             </div>
 
             <div className="w-full flex flex-col items-start space-y-2">
+              <label className="font-medium">Previsão de peças <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
+              <Controller
+                name="delivery_prevision"
+                control={control}
+                render={({ field }) => (
+                  <DateTimePickerDeliveryPrevision field={field} />
+                )}
+              />
+
+              {errors.delivery_prevision && (
+                <span className="text-xs text-red-500 mt-3">
+                  {errors.delivery_prevision.message}
+                </span>
+              )}
+            </div>
+            {/* <div className="w-full flex flex-col items-start space-y-2">
               <label className="font-medium">Previsão de entrega <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
               <Controller
                 name="delivery_prevision"
                 control={control}
                 render={({ field }) => (
-                  <Popover open={hasTogglePopover}>
+                  <Popover open={hasTogglePopover} onOpenChange={setHasTogglePopover}>
                     <PopoverTrigger asChild>
                       <Button
-                        onClick={() => {
-                          setHasTogglePopover(!hasTogglePopover);
-                        }}
                         variant={"outline"}
                         className={cn(
                           "w-full justify-start text-left font-normal",
@@ -169,6 +174,23 @@ export function RegisterOrder() {
               {errors.delivery_prevision && (
                 <span className="text-xs text-red-500 mt-3">
                   {errors.delivery_prevision.message}
+                </span>
+              )}
+            </div> */}
+
+            <div className="w-full flex flex-col items-start space-y-2">
+              <label className="font-medium">Previsão de peças <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
+              <Controller
+                name="car_parts_date"
+                control={control}
+                render={({ field }) => (
+                  <DateTimePickerCarParts field={field} />
+                )}
+              />
+
+              {errors.car_parts_date && (
+                <span className="text-xs text-red-500 mt-3">
+                  {errors.car_parts_date.message}
                 </span>
               )}
             </div>

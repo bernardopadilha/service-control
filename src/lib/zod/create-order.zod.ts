@@ -12,9 +12,14 @@ export const createOrderSchema = z.object({
   }).nonempty('Esse campo não pode ser vázio'),
 
   delivery_prevision: z.string({
-    invalid_type_error: 'Selecione uma data',
+    invalid_type_error: 'Selecione uma data de previsão',
     required_error: 'Esse campo não pode ser vázio',
-  }).nonempty('Esse campo não pode ser vázio'),
+  }),
+
+  car_parts_date: z.date({
+    invalid_type_error: 'Selecione uma data de previsão',
+    required_error: 'Esse campo não pode ser vázio',
+  }),
 
   step: z.string({
     invalid_type_error: 'Selecione uma etapa',

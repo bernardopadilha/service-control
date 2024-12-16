@@ -1,9 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Check, CheckCheck, CircleDollarSign, Drill, Loader2, TimerOff } from "lucide-react"
+import { Check, Loader2 } from "lucide-react"
 
 import {
   Card,
-  CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
@@ -27,7 +26,7 @@ import { users } from "@/utils/mock";
 import { format } from "date-fns";
 
 interface OrderCardProps {
-  step_type: string;
+  step_type?: string;
   technical_id: string;
   type: 'single' | 'all'
   orders: OrderProps[] | null
@@ -39,15 +38,16 @@ interface OrderCardProps {
   onToggleDialogDeliveryPrevision: () => void
 }
 
-export function OrderCard({ step_type, handleUpdatePrevisionDate, technical_id, type, orders, onFindAllOrders, isLoadingOrders, setOrderSelected, onToggleDialogDeliveryPrevision }: OrderCardProps) {
+const statusOrder = [
+  "Orçamento",
+  "Execução",
+  "Aguardando",
+  "Finalizado"
+]
+
+export function OrderCardPerTechnicals({ step_type, handleUpdatePrevisionDate, technical_id, type, orders, onFindAllOrders, isLoadingOrders, setOrderSelected, onToggleDialogDeliveryPrevision }: OrderCardProps) {
   const [isLoadingDeleteOrder, setIsLoadingDeleteOrder] = useState(false)
 
-  const iconsMap: any = {
-   "Orçamento": <CircleDollarSign size={32} className="text-blue-500" />,
-    "Execução": <Drill size={32} className="text-green-300" />,
-    "Aguardando": <TimerOff size={32} className="text-yellow-300" />,
-    "Finalizado": <CheckCheck size={32} className="text-violet-500" />,
-  }
 
   async function handleUpdateTechnical(order_id: number, update_technical_id: string) {
     const { error } = await supabase.from('orders').update({
@@ -89,60 +89,51 @@ export function OrderCard({ step_type, handleUpdatePrevisionDate, technical_id, 
     <>
       <div className={`${type === 'all' ? 'flex-col w-full flex items-center justify-center' : 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full'}  gap-2`}>
         {orders && orders.filter((o) => {
-          if (technical_id === 'allTechnical') {
-            return o.step === step_type;
-          } else {
-            return technical_id === o.technical_id && o.step === step_type;
-          }
+            return technical_id === o.technical_id;
+        })
+        .sort((a:any, b:any) => {
+        const indexA = statusOrder.indexOf(a.step);
+        const indexB = statusOrder.indexOf(b.step);
+    
+        if (indexA !== indexB) {
+          return indexA - indexB;
+        }
+    
+        const dateA = new Date(a.delivery_prevision).getTime();
+        const dateB = new Date(b.delivery_prevision).getTime();
+    
+        return dateA - dateB; 
         }).map((order) => {
           return (
-            <Card key={order.id} className={`${order.step === "Finalizado" ? 'border-b-green-500/50' :
-              order.step === 'Análise' ? 'border-b-purple-500/50' :
-                order.step === 'Orçamento' ? 'border-b-orange-500/50' :
-                  order.step === 'Execução' ? 'border-b-amber-300/50' :
-                    order.step === 'Aguardando' && 'border-b-red-500/50'
+            <Card key={order.id} className={`${order.step === "Finalizado" ? 'border-b-violet-500/50' :
+                order.step === 'Orçamento' ? 'border-b-blue-500/50' :
+                  order.step === 'Execução' ? 'border-b-green-300/50' :
+                    order.step === 'Aguardando' && 'border-b-yellow-300/50'
               } w-full border-b-8 mb-4`}
             >
               <CardHeader>
                 <div className="space-y-1">
                   <CardTitle className="text-zinc-600 uppercase">{order.model}</CardTitle>
                   <CardDescription className="whitespace-nowrap">
-                    Data de entrada: <span className="text-base font-semibold">{format(new Date(order.created_at), 'dd/MM/yyyy')}</span>
+                    Data de entrada: <span className="text-black font-bold">{format(new Date(order.created_at), "dd/MM/yyyy 'às' HH:mm")}</span>
                   </CardDescription>
                   <CardDescription className="whitespace-nowrap">
                     Previsão:{" "}
                     <span className="text-black font-bold">
-                      {order.delivery_prevision
-                        ? `${order.delivery_prevision.split('-')[2]}/${order.delivery_prevision.split('-')[1]}/${order.delivery_prevision.split('-')[0]}`
-                        : "Data não disponível"}
+                      {order.delivery_prevision ? format(new Date(order.delivery_prevision), "dd/MM/yyyy 'às' HH:mm") : 'Data não disponível'}
+                    </span>
+                  </CardDescription>
+                  <CardDescription>
+                    Placa:
+                    <span className="text-black font-bold uppercase">
+                    {" "}{order.license_plate}
                     </span>
                   </CardDescription>
                 </div>
-                {iconsMap[order.step] || null}
               </CardHeader>
-              <CardContent className="flex justify-center">
-                {/* div da placa */}
-                <div className="w-64 overflow-hidden rounded-md border-[3px] border-black bg-white">
-                  <div className="flex w-full items-center justify-between bg-blue-800 px-2 py-1 text-sm font-semibold text-white">
-                    <img
-                      alt="Logo Mercosul"
-                      className="w-6"
-                      src="https://mercosul.navi.ifrn.edu.br/img/portal-velho/logo-capa.png"
-                    />
-                    <span className="font-bold">BRASIL</span>
-                    <img
-                      className="rounded-xs w-4 border border-white"
-                      alt="Bandeira do Brasil"
-                      src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/05/Flag_of_Brazil.svg/2000px-Flag_of_Brazil.svg.png"
-                    />
-                  </div>
-                  <div className="flex justify-center bg-white py-2">
-                    <span className="text-5xl md:text-4xl font-extrabold text-black uppercase">{order.license_plate}</span>
-                  </div>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-center gap-2">
-                <div className="flex flex-col gap-2">
+              
+              <CardFooter className="flex gap-2">
+                <div className="flex flex-col gap-2 w-full">
                   <label className="text-sm font-medium">Troque a etapa deste carro</label>
                   <Select
                     disabled={isLoadingOrders}
@@ -166,7 +157,6 @@ export function OrderCard({ step_type, handleUpdatePrevisionDate, technical_id, 
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="Análise">Análise</SelectItem>
                         <SelectItem value="Orçamento">Orçamento</SelectItem>
                         <SelectItem value="Execução">Execução</SelectItem>
                         <SelectItem value="Aguardando">Aguardando</SelectItem>
@@ -224,8 +214,6 @@ export function OrderCard({ step_type, handleUpdatePrevisionDate, technical_id, 
                   )}
                 </div>
               </CardFooter>
-
-
             </Card>
           )
         })}
