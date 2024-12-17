@@ -84,7 +84,7 @@ export function RegisterOrder() {
             Ir para tela de tickets
           </Button>
 
-          <Button type="button" className="bg-zinc-700" onClick={() => window.location.href = '/tickets'}>
+          <Button type="button" className="bg-zinc-700" onClick={() => window.location.href = '/tecnicos'}>
             <ListOrdered className="size-4 mr-2" />
             Ir para visão geral dos técnicos
           </Button>
