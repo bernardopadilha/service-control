@@ -31,7 +31,8 @@ describe("createOrder", () => {
       model: "Model X",
       delivery_prevision: new Date().toISOString(),
       step: "initial",
-      technical_id: "123"
+      technical_id: "123",
+      car_parts_date: new Date(),
     };
 
     const mockResponseData = [{
@@ -70,7 +71,8 @@ describe("createOrder", () => {
       model: "Model X",
       delivery_prevision: new Date().toISOString(),
       step: "initial",
-      technical_id: "123"
+      technical_id: "123",
+      car_parts_date: new Date()
     };
 
     const mockError = { message: "Something went wrong" };
