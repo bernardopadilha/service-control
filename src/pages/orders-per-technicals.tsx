@@ -26,11 +26,11 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Button } from "@/components/ui/button";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { addDays, format, subDays } from "date-fns";
-import { ptBR } from "date-fns/locale";
 import { Calendar } from "@/components/ui/calendar";
 import { cn } from "@/lib/utils";
 import { OrderCardPerTechnicals } from "@/components/application/order-card-per-technicals";
 import { OrderCardTechnical } from "@/components/application/order-card-technical";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export function OrdersPerTechnical() {
   const [step] = useState('allStep')
@@ -113,6 +113,23 @@ export function OrdersPerTechnical() {
   }
   })
 
+  const hours = Array.from({ length: 24 }, (_, i) => i);
+ 
+  const handleTimeChange = (type: "hour" | "minute", value: string) => {
+    const currentDate = date ? date : new Date();
+    const newDate = new Date(currentDate);
+
+    if (type === "hour") {
+      const hour = parseInt(value, 10);
+      newDate.setHours(hour);
+    } else if (type === "minute") {
+      const minute = parseInt(value, 10);
+      newDate.setMinutes(minute);
+    }
+
+    setDate(newDate); // Atualiza o valor do campo
+  };
+
 
   return (
     <main className="w-full flex flex-col items-center justify-start">
@@ -123,7 +140,7 @@ export function OrdersPerTechnical() {
             <DialogDescription>Digite no campo abaixo a nova previsão de entrega no veículo {orderSelected?.model} com a placa {orderSelected?.license_plate}</DialogDescription>
           </DialogHeader>
 
-          <Popover open={hasTogglePopover}>
+          {/* <Popover open={hasTogglePopover}>
             <PopoverTrigger asChild>
               <Button
                 onClick={() => {
@@ -150,6 +167,72 @@ export function OrdersPerTechnical() {
                 })}
                 initialFocus
               />
+            </PopoverContent>
+          </Popover> */}
+
+          <Popover open={hasTogglePopover} onOpenChange={setHasTogglePopover}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !date && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4 text-zinc-500" />
+                {date ? (
+                  format(date, "dd/MM/yyyy 'ás' HH:mm")
+                ) : (
+                  <span className="text-zinc-500">Selecione uma data e hora</span>
+                )}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0">
+              <div className="sm:flex">
+                <Calendar
+                  mode="single"
+                  selected={addDays(date, 1)}
+                  onSelect={((dateValue: any) => {
+                    setHasTogglePopover(!hasTogglePopover)
+                    setDate(subDays(new Date(dateValue), 1))
+                  })}
+                  initialFocus
+                />
+                <div className="flex flex-col sm:flex-row sm:h-[300px] divide-y sm:divide-y-0 sm:divide-x">
+                  <ScrollArea className="w-64 sm:w-auto">
+                    <div className="flex sm:flex-col p-2">
+                      {hours.reverse().map((hour) => (
+                        <Button
+                          key={hour}
+                          size="icon"
+                          variant={date && new Date(date).getHours() === hour ? "default" : "ghost"}
+                          className="sm:w-full shrink-0 aspect-square"
+                          onClick={() => handleTimeChange("hour", hour.toString())}
+                        >
+                          {hour}
+                        </Button>
+                      ))}
+                    </div>
+                    <ScrollBar orientation="horizontal" className="sm:hidden" />
+                  </ScrollArea>
+                  <ScrollArea className="w-64 sm:w-auto">
+                    <div className="flex sm:flex-col p-2">
+                      {Array.from({ length: 12 }, (_, i) => i * 5).map((minute) => (
+                        <Button
+                          key={minute}
+                          size="icon"
+                          variant={date && new Date(date).getMinutes() === minute ? "default" : "ghost"}
+                          className="sm:w-full shrink-0 aspect-square"
+                          onClick={() => handleTimeChange("minute", minute.toString())}
+                        >
+                          {minute.toString().padStart(2, '0')}
+                        </Button>
+                      ))}
+                    </div>
+                    <ScrollBar orientation="horizontal" className="sm:hidden" />
+                  </ScrollArea>
+                </div>
+              </div>
             </PopoverContent>
           </Popover>
 

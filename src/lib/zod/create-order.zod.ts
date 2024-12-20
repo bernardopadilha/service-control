@@ -17,7 +17,7 @@ export const createOrderSchema = z.object({
   }),
 
   car_parts_date: z.date({
-    invalid_type_error: 'Selecione uma data de previsão',
+    invalid_type_error: 'Selecione a data de previsão de peças',
     required_error: 'Esse campo não pode ser vázio',
   }),
 

@@ -58,7 +58,6 @@ export function RegisterOrder() {
       step: '',
       model: '',
       license_plate: '',
-      delivery_prevision: String(new Date()),
       technical_id: '',
     })
   }
@@ -126,7 +125,7 @@ export function RegisterOrder() {
             </div>
 
             <div className="w-full flex flex-col items-start space-y-2">
-              <label className="font-medium">Previsão de peças <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
+              <label className="font-medium">Previsão de entrega <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
               <Controller
                 name="delivery_prevision"
                 control={control}
@@ -217,7 +216,6 @@ export function RegisterOrder() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        <SelectItem value="Análise">Análise</SelectItem>
                         <SelectItem value="Orçamento">Orçamento</SelectItem>
                         <SelectItem value="Execução">Execução</SelectItem>
                         <SelectItem value="Aguardando">Aguardando</SelectItem>

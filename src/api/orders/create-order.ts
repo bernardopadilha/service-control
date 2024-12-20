@@ -13,6 +13,7 @@ export interface OrderProps {
   step: string,
   technical_id: string,
   observation: string
+  car_parts_date: Date,
 }
 
 export async function createOrder(orderData: CreateOrderData) {

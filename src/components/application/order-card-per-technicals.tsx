@@ -112,21 +112,29 @@ export function OrderCardPerTechnicals({ step_type, handleUpdatePrevisionDate, t
               } w-full border-b-8 mb-4`}
             >
               <CardHeader>
-                <div className="space-y-1">
-                  <CardTitle className="text-zinc-600 uppercase">{order.model}</CardTitle>
+                <div className="space-y-1 w-full">
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-zinc-600 uppercase">{order.model}</CardTitle>
+                    <CardDescription className="text-lg">
+                      Placa:
+                      <span className="text-zinc-600 font-bold uppercase">
+                      {" "}{order.license_plate}
+                      </span>
+                    </CardDescription>
+                  </div>
                   <CardDescription className="whitespace-nowrap">
-                    Data de entrada: <span className="text-black font-bold">{format(new Date(order.created_at), "dd/MM/yyyy 'às' HH:mm")}</span>
+                    Data de entrada: <span className="text-zinc-600 font-semibold">{format(new Date(order.created_at), "dd/MM/yyyy 'às' HH:mm")}</span>
                   </CardDescription>
                   <CardDescription className="whitespace-nowrap">
-                    Previsão:{" "}
-                    <span className="text-black font-bold">
+                    Previsão de entrega:{" "}
+                    <span className="text-zinc-600 font-semibold">
                       {order.delivery_prevision ? format(new Date(order.delivery_prevision), "dd/MM/yyyy 'às' HH:mm") : 'Data não disponível'}
                     </span>
                   </CardDescription>
-                  <CardDescription>
-                    Placa:
-                    <span className="text-black font-bold uppercase">
-                    {" "}{order.license_plate}
+                  <CardDescription className="whitespace-nowrap">
+                    Previsão de peças:{" "}
+                    <span className="text-zinc-600 font-semibold">
+                      {order.car_parts_date ? format(new Date(order.car_parts_date), "dd/MM/yyyy 'às' HH:mm") : 'Data não disponível'}
                     </span>
                   </CardDescription>
                 </div>
@@ -134,7 +142,6 @@ export function OrderCardPerTechnicals({ step_type, handleUpdatePrevisionDate, t
               
               <CardFooter className="flex gap-2">
                 <div className="flex flex-col gap-2 w-full">
-                  <label className="text-sm font-medium">Troque a etapa deste carro</label>
                   <Select
                     disabled={isLoadingOrders}
                     value={order.step}
@@ -152,7 +159,7 @@ export function OrderCardPerTechnicals({ step_type, handleUpdatePrevisionDate, t
                       }
                     }}
                   >
-                    <SelectTrigger className="w-full flex">
+                    <SelectTrigger className="w-2/3 flex">
                       {order.step}
                     </SelectTrigger>
                     <SelectContent>
@@ -169,7 +176,7 @@ export function OrderCardPerTechnicals({ step_type, handleUpdatePrevisionDate, t
                     await handleUpdateTechnical(order.id, value)
                     await onFindAllOrders()
                   }}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger className="w-2/3">
                       <SelectValue placeholder="Selecione o técnico" />
                     </SelectTrigger>
                     <SelectContent>
