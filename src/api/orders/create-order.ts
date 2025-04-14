@@ -20,6 +20,23 @@ export interface OrderProps {
 }
 
 export async function createOrder(orderData: CreateOrderData) {
+  // 1. Buscar o maior valor de "order" desse técnico
+  const { data: existingOrders, error: fetchError } = await supabase
+    .from('orders')
+    .select('order')
+    .eq('technical_id', orderData.technical_id)
+    .order('order', { ascending: false })
+    .limit(1)
+
+  if (fetchError) {
+    toast.error(fetchError.message)
+    throw new Error(fetchError.message)
+  }
+
+  const lastOrder = existingOrders?.[0]?.order ?? 0
+  const newOrderValue = lastOrder + 1
+
+  // 2. Inserir o novo pedido com o novo valor de "order"
   const { data, error } = await supabase
     .from('orders')
     .insert([
@@ -33,6 +50,7 @@ export async function createOrder(orderData: CreateOrderData) {
         car_parts_date: orderData.car_parts_date,
         technical_id: String(orderData.technical_id),
         observation: '',
+        order: newOrderValue,
       },
     ])
     .select()

@@ -94,19 +94,108 @@ export function OrderCardPerTechnicals({
   async function handleUpdateOrderCard({
     newOrder,
     order_id,
+    technical_id,
   }: {
     newOrder: number
     order_id: number
+    technical_id: string
   }) {
-    const { error } = await supabase
+    // Primeiro, obtenha a ordem atual do item que está sendo movido
+    const { data: currentOrderData, error: currentOrderError } = await supabase
       .from('orders')
-      .update({ order: newOrder })
+      .select('order')
       .eq('id', order_id)
+      .single()
 
-    if (error) {
-      toast.error(error.message)
-      throw new Error(error.message)
+    if (currentOrderError) {
+      toast.error(currentOrderError.message)
+      throw new Error(currentOrderError.message)
     }
+
+    const currentOrder = currentOrderData.order
+
+    // Se a nova ordem é igual à atual, não precisamos fazer nada
+    if (currentOrder === newOrder) {
+      return
+    }
+
+    // Busca todos os itens relacionados ao technical_id
+    const { data: ordersPerTechnical, error: ordersPerTechnicalError } =
+      await supabase.from('orders').select('*').eq('technical_id', technical_id)
+
+    if (ordersPerTechnicalError) {
+      toast.error(ordersPerTechnicalError.message)
+      throw new Error(ordersPerTechnicalError.message)
+    }
+
+    let itemsToUpdate = []
+
+    // Caso 1: Movendo para uma posição anterior (ex: de 5 para 3)
+    if (newOrder < currentOrder) {
+      // Seleciona itens que precisam ser incrementados (itens entre newOrder e currentOrder - 1)
+      itemsToUpdate = ordersPerTechnical.filter(
+        (order) =>
+          order.order >= newOrder &&
+          order.order < currentOrder &&
+          order.id !== order_id,
+      )
+
+      // Prepara as atualizações para incrementar a ordem desses itens
+      const updates = itemsToUpdate.map((order) =>
+        supabase
+          .from('orders')
+          .update({ order: order.order + 1 })
+          .eq('id', order.id),
+      )
+
+      // Atualiza o item que está sendo movido para a nova posição
+      updates.push(
+        supabase.from('orders').update({ order: newOrder }).eq('id', order_id),
+      )
+
+      // Executa todas as atualizações em paralelo
+      const results = await Promise.all(updates)
+      const hasError = results.some((res) => res.error)
+
+      if (hasError) {
+        toast.error('Erro ao atualizar a ordem dos carros')
+        throw new Error('Erro ao atualizar ordens')
+      }
+    }
+    // Caso 2: Movendo para uma posição posterior (ex: de 3 para 5)
+    else {
+      // Seleciona itens que precisam ser decrementados (itens entre currentOrder + 1 e newOrder)
+      itemsToUpdate = ordersPerTechnical.filter(
+        (order) =>
+          order.order > currentOrder &&
+          order.order <= newOrder &&
+          order.id !== order_id,
+      )
+
+      // Prepara as atualizações para decrementar a ordem desses itens
+      const updates = itemsToUpdate.map((order) =>
+        supabase
+          .from('orders')
+          .update({ order: order.order - 1 })
+          .eq('id', order.id),
+      )
+
+      // Atualiza o item que está sendo movido para a nova posição
+      updates.push(
+        supabase.from('orders').update({ order: newOrder }).eq('id', order_id),
+      )
+
+      // Executa todas as atualizações em paralelo
+      const results = await Promise.all(updates)
+      const hasError = results.some((res) => res.error)
+
+      if (hasError) {
+        toast.error('Erro ao atualizar a ordem dos carros')
+        throw new Error('Erro ao atualizar ordens')
+      }
+    }
+
+    onFindAllOrders()
     toast.success('Ordem de carros atualizada com sucesso!')
   }
 
@@ -264,11 +353,11 @@ export function OrderCardPerTechnicals({
                             await handleUpdateOrderCard({
                               newOrder,
                               order_id: order.id,
+                              technical_id: order.technical_id,
                             })
                           }
-                          onFindAllOrders()
                         }}
-                        defaultValue={String(order.order)}
+                        value={String(order.order)}
                       >
                         <SelectTrigger className="w-2/3 flex">
                           <SelectValue placeholder="Ordem de carros" />
