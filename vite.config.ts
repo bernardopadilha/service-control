@@ -1,15 +1,15 @@
-import path from "path";
-import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
-import type { UserConfig } from "vite";
-import type { InlineConfig } from "vitest";
+import react from '@vitejs/plugin-react'
+import path from 'path'
+import type { UserConfig } from 'vite'
+import { defineConfig } from 'vite'
+import type { InlineConfig } from 'vitest'
 
 export default defineConfig({
   plugins: [react()],
   resolve: {
-    mainFields: ["browser", "module", "jsnext:main", "jsnext"],
+    mainFields: ['browser', 'module', 'jsnext:main', 'jsnext'],
     alias: {
-      "@": path.resolve(__dirname, "./src"),
+      '@': path.resolve(__dirname, './src'),
     },
   },
   test: {
@@ -17,6 +17,6 @@ export default defineConfig({
     setupFiles: ['./test/setup.ts'],
   },
   server: {
-    host: true
-  }
-} as UserConfig & { test: InlineConfig });
+    host: true,
+  },
+} as UserConfig & { test: InlineConfig })

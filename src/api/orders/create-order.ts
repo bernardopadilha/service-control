@@ -1,19 +1,22 @@
-import { toast } from "sonner";
-import { supabase } from "../supabase";
-import { CreateOrderData } from "@/lib/zod/create-order.zod";
+import { toast } from 'sonner'
+
+import { CreateOrderData } from '@/lib/zod/create-order.zod'
+
+import { supabase } from '../supabase'
 
 export interface OrderProps {
-  id: number,
-  license_plate: string,
-  model: string,
-  entry_date: string,
-  exit_date: string | null,
-  delivery_prevision: string,
-  created_at: string,
-  step: string,
-  technical_id: string,
+  id: number
+  license_plate: string
+  model: string
+  entry_date: string
+  exit_date: string | null
+  delivery_prevision: string
+  created_at: string
+  step: string
+  technical_id: string
   observation: string
-  car_parts_date: Date,
+  car_parts_date: Date
+  order: number
 }
 
 export async function createOrder(orderData: CreateOrderData) {
@@ -29,16 +32,16 @@ export async function createOrder(orderData: CreateOrderData) {
         step: orderData.step,
         car_parts_date: orderData.car_parts_date,
         technical_id: String(orderData.technical_id),
-        observation: ''
+        observation: '',
       },
     ])
     .select()
 
   if (error) {
-    toast.error(error.message);
-    throw new Error(error.message);
+    toast.error(error.message)
+    throw new Error(error.message)
   }
 
-  toast.success("Pedido gerado com sucesso!")
+  toast.success('Pedido gerado com sucesso!')
   return data
 }

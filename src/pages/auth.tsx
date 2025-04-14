@@ -1,26 +1,25 @@
-import { Input } from "@/components/ui/input";
 import { BadgeInfo } from 'lucide-react'
 import { Helmet } from 'react-helmet-async'
+
+import { Input } from '@/components/ui/input'
 
 export function Auth() {
   return (
     <>
       <Helmet
         title="Cadastrar serviço"
-        link={[{ href: "./short_logo.png", rel: 'shortcut icon' }]}
+        link={[{ href: './short_logo.png', rel: 'shortcut icon' }]}
       />
       <div className="w-full h-screen flex justify-center md:grid md:grid-cols-2">
         <div className="md:flex hidden flex-col space-y-14  items-center justify-center  bg-[radial-gradient(ellipse_at_right,_var(--tw-gradient-stops))] from-gray-700 via-gray-900 to-black">
-            <img
-              src="/logo.png"
-              alt="Logo"
-              className="w-30 h-14 object-cover"
-            />
+          <img src="/logo.png" alt="Logo" className="w-30 h-14 object-cover" />
           <img src="./banner_auth.png" alt="" />
         </div>
         <div className="w-full md:p-16 p-5 rounded-md mx-auto flex flex-col space-y-12 justify-center">
           <div className="w-full mt-8 flex flex-col md:space-y-3 space-y-6 items-start">
-            <h1 className="font-bold md:text-4xl text-3xl text-zinc-600">Entrar</h1>
+            <h1 className="font-bold md:text-4xl text-3xl text-zinc-600">
+              Entrar
+            </h1>
 
             <p className=" text-zinc-400 max-w-md text-start md:text-base text-sm">
               Use suas credenciais para entrar na plataforma e ter acesso à
@@ -28,24 +27,18 @@ export function Auth() {
             </p>
           </div>
 
-          <form
-            className="w-full flex flex-col items-start justify-center gap-4 md:mt-10 mt-3"
-          >
+          <form className="w-full flex flex-col items-start justify-center gap-4 md:mt-10 mt-3">
             <div className="w-full flex flex-col">
               <label className="text-md text-zinc-500">
                 Endereço de e-mail
               </label>
 
-              <Input
-                placeholder="Digite o seu endereço de e-mail"
-              />
+              <Input placeholder="Digite o seu endereço de e-mail" />
             </div>
 
             <div className="w-full flex flex-col">
               <label className="text-md text-zinc-500">Senha</label>
-              <Input
-                placeholder="Digite sua senha"
-              />
+              <Input placeholder="Digite sua senha" />
 
               <div className="w-full flex justify-end items-center mt-1">
                 <a

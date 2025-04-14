@@ -1,0 +1,16 @@
+{
+  "extends": [
+    "@rocketseat/eslint-config/react",
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:react-hooks/recommended"
+  ],
+  "plugins": [
+    "@typescript-eslint",
+    "simple-import-sort",
+    "react-hooks"
+  ],
+  "rules": {
+    "simple-import-sort/imports": "error"
+  }
+}

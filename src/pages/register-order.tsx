@@ -1,23 +1,27 @@
-import { useEffect, useRef } from "react";
+import { zodResolver } from '@hookform/resolvers/zod'
+import { ListOrdered, Plus } from 'lucide-react'
+import { useEffect, useRef } from 'react'
+import { Controller, useForm } from 'react-hook-form'
 
-// import shadcn
-
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { ListOrdered, Plus } from "lucide-react";
+import { createOrder } from '@/api/orders/create-order'
+import { Button } from '@/components/ui/button'
+import { DateTimePickerCarParts } from '@/components/ui/date-time-picker-car-parts'
+import { DateTimePickerDeliveryPrevision } from '@/components/ui/date-time-picker-delivery-prevision'
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
-  DialogTitle
-} from "@/components/ui/dialog"
+  DialogTitle,
+} from '@/components/ui/dialog'
+// import shadcn
+import { Input } from '@/components/ui/input'
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
   InputOTPSlot,
-} from "@/components/ui/input-otp"
+} from '@/components/ui/input-otp'
 import {
   Select,
   SelectContent,
@@ -25,16 +29,10 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-
-import { Controller, useForm } from "react-hook-form"
-import { zodResolver } from '@hookform/resolvers/zod';
-import { createOrder } from "@/api/orders/create-order";
-import { CreateOrderData, createOrderSchema } from "@/lib/zod/create-order.zod";
-import { useAuth } from "@/hooks/useAuth";
-import { users } from "@/utils/mock";
-import { DateTimePickerCarParts } from "@/components/ui/date-time-picker-car-parts";
-import { DateTimePickerDeliveryPrevision } from "@/components/ui/date-time-picker-delivery-prevision";
+} from '@/components/ui/select'
+import { useAuth } from '@/hooks/useAuth'
+import { CreateOrderData, createOrderSchema } from '@/lib/zod/create-order.zod'
+import { users } from '@/utils/mock'
 
 export function RegisterOrder() {
   const { isOpen, setIsOpen, otp, handleOtpChangeCreateOrder } = useAuth()
@@ -47,9 +45,9 @@ export function RegisterOrder() {
     formState: { errors, isSubmitting },
   } = useForm<CreateOrderData>({
     resolver: zodResolver(createOrderSchema),
-  });
+  })
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null)
 
   async function handleCreateOrder(data: CreateOrderData) {
     await createOrder(data)
@@ -64,26 +62,38 @@ export function RegisterOrder() {
 
   useEffect(() => {
     if (isOpen) {
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
       if (isMobile && inputRef.current) {
-        inputRef.current.focus();
+        inputRef.current.focus()
       }
     }
-  }, [isOpen]);
+  }, [isOpen])
 
   return (
     <main className="w-full flex flex-col items-center justify-start h-screen absolute">
       <div className="w-full min-h-[220px] space-y-1 pb-10 flex flex-col items-center justify-center bg-zinc-800">
-        <h1 className="uppercase text-3xl text-zinc-50 font-semibold">Cadastro de ticket</h1>
-        <p className="text-zinc-50 font-medium">Aqui você casdastra novos tickets</p>
-        
+        <h1 className="uppercase text-3xl text-zinc-50 font-semibold">
+          Cadastro de ticket
+        </h1>
+        <p className="text-zinc-50 font-medium">
+          Aqui você casdastra novos tickets
+        </p>
+
         <div className="flex items-center gap-2">
-          <Button type="button" className="bg-zinc-700" onClick={() => window.location.href = '/tickets'}>
+          <Button
+            type="button"
+            className="bg-zinc-700"
+            onClick={() => (window.location.href = '/tickets')}
+          >
             <ListOrdered className="size-4 mr-2" />
             Ir para tela de tickets
           </Button>
 
-          <Button type="button" className="bg-zinc-700" onClick={() => window.location.href = '/tecnicos'}>
+          <Button
+            type="button"
+            className="bg-zinc-700"
+            onClick={() => (window.location.href = '/tecnicos')}
+          >
             <ListOrdered className="size-4 mr-2" />
             Ir para visão geral dos técnicos
           </Button>
@@ -96,9 +106,12 @@ export function RegisterOrder() {
             className="w-full flex flex-col mx-auto justify-center space-y-4"
           >
             <div className="space-y-2">
-              <label className="font-medium">Placa <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
+              <label className="font-medium">
+                Placa{' '}
+                <span className="text-xs text-zinc-600/60">(Obrigatório)</span>
+              </label>
               <Input
-                {...register("license_plate")}
+                {...register('license_plate')}
                 placeholder="Digite a placa..."
               />
 
@@ -110,9 +123,12 @@ export function RegisterOrder() {
             </div>
 
             <div className="space-y-2">
-              <label className="font-medium">Modelo do carro <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
+              <label className="font-medium">
+                Modelo do carro{' '}
+                <span className="text-xs text-zinc-600/60">(Obrigatório)</span>
+              </label>
               <Input
-                {...register("model")}
+                {...register('model')}
                 className="uppercase"
                 placeholder="Digite o modelo do carro..."
               />
@@ -125,7 +141,10 @@ export function RegisterOrder() {
             </div>
 
             <div className="w-full flex flex-col items-start space-y-2">
-              <label className="font-medium">Previsão de entrega <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
+              <label className="font-medium">
+                Previsão de entrega{' '}
+                <span className="text-xs text-zinc-600/60">(Obrigatório)</span>
+              </label>
               <Controller
                 name="delivery_prevision"
                 control={control}
@@ -185,13 +204,14 @@ export function RegisterOrder() {
             </div> */}
 
             <div className="w-full flex flex-col items-start space-y-2">
-              <label className="font-medium">Previsão de peças <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
+              <label className="font-medium">
+                Previsão de peças{' '}
+                <span className="text-xs text-zinc-600/60">(Obrigatório)</span>
+              </label>
               <Controller
                 name="car_parts_date"
                 control={control}
-                render={({ field }) => (
-                  <DateTimePickerCarParts field={field} />
-                )}
+                render={({ field }) => <DateTimePickerCarParts field={field} />}
               />
 
               {errors.car_parts_date && (
@@ -202,7 +222,10 @@ export function RegisterOrder() {
             </div>
 
             <div className="w-full space-y-2">
-              <label className="font-medium">Etapa <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
+              <label className="font-medium">
+                Etapa{' '}
+                <span className="text-xs text-zinc-600/60">(Obrigatório)</span>
+              </label>
               <Controller
                 name="step"
                 control={control}
@@ -234,7 +257,10 @@ export function RegisterOrder() {
             </div>
 
             <div className="w-full space-y-2">
-              <label className="font-medium bri">Técnico <span className="text-xs text-zinc-600/60">(Obrigatório)</span></label>
+              <label className="font-medium bri">
+                Técnico{' '}
+                <span className="text-xs text-zinc-600/60">(Obrigatório)</span>
+              </label>
               <Controller
                 name="technical_id"
                 control={control}
@@ -248,11 +274,15 @@ export function RegisterOrder() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
-                        {users.filter(user => user.role === 'technical').map(user => {
-                          return (
-                            <SelectItem key={user.id} value={user.id}>{user.name}</SelectItem>
-                          )
-                        })}
+                        {users
+                          .filter((user) => user.role === 'technical')
+                          .map((user) => {
+                            return (
+                              <SelectItem key={user.id} value={user.id}>
+                                {user.name}
+                              </SelectItem>
+                            )
+                          })}
                       </SelectGroup>
                     </SelectContent>
                   </Select>
@@ -266,12 +296,7 @@ export function RegisterOrder() {
             </div>
 
             <div className="flex flex-col md:flex-row items-center gap-2">
-
-
-              <Button
-                type="submit"
-                className="bg-zinc-700 flex-1 w-full"
-              >
+              <Button type="submit" className="bg-zinc-700 flex-1 w-full">
                 {isSubmitting ? (
                   <div className="w-5 h-5 border-2 border-zinc-800 animate-spin border-t-white rounded-full" />
                 ) : (
