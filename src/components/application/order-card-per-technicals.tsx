@@ -200,12 +200,66 @@ export function OrderCardPerTechnicals({
   }
 
   async function handleDeleteOrder(orderId: number) {
-    if (window.confirm('Você tem certeza que deseja entregar esse veículo')) {
+    if (!window.confirm('Você tem certeza que deseja entregar esse veículo?')) {
+      return
+    }
+
+    try {
       setIsLoadingDeleteOrder(true)
-      await supabase.from('orders').delete().eq('id', orderId)
-      setIsLoadingDeleteOrder(false)
+
+      // 1. Buscar os dados do pedido a ser deletado (precisamos do `order` e `technical_id`)
+      const { data: orderToDelete, error: fetchError } = await supabase
+        .from('orders')
+        .select('order, technical_id')
+        .eq('id', orderId)
+        .single()
+
+      if (fetchError) {
+        toast.error(fetchError.message)
+        throw new Error(fetchError.message)
+      }
+
+      const deletedOrder = orderToDelete.order
+      const technicalId = orderToDelete.technical_id
+
+      // 2. Buscar todos os pedidos do mesmo técnico
+      const { data: orders, error: ordersError } = await supabase
+        .from('orders')
+        .select('id, order')
+        .eq('technical_id', technicalId)
+
+      if (ordersError) {
+        toast.error(ordersError.message)
+        throw new Error(ordersError.message)
+      }
+
+      // 3. Filtrar os pedidos com `order` maior que o que será deletado
+      const ordersToUpdate = orders.filter(
+        (order) => order.order > deletedOrder,
+      )
+
+      // 4. Atualizar os pedidos subsequentes, diminuindo o `order` em 1
+      const updates = ordersToUpdate.map((order) =>
+        supabase
+          .from('orders')
+          .update({ order: order.order - 1 })
+          .eq('id', order.id),
+      )
+
+      // 5. Deletar o pedido principal
+      const deleteOrder = supabase.from('orders').delete().eq('id', orderId)
+
+      // 6. Executar todas as operações em paralelo
+      await Promise.all([...updates, deleteOrder])
+
+      // 7. Atualizar a lista e notificar
       onFindAllOrders()
       toast.success('Veículo entregue com sucesso!')
+    } catch (err) {
+      console.error(err)
+      toast.error('Erro ao deletar o pedido')
+    } finally {
+      setIsLoadingDeleteOrder(false)
     }
   }
 
@@ -220,6 +274,12 @@ export function OrderCardPerTechnicals({
               return technical_id === o.technical_id
             })
             .sort((a, b) => {
+              const isAFinalizado = a.step === 'Finalizado'
+              const isBFinalizado = b.step === 'Finalizado'
+
+              if (isAFinalizado && !isBFinalizado) return 1
+              if (!isAFinalizado && isBFinalizado) return -1
+
               return (a.order ?? 0) - (b.order ?? 0)
             })
             .map((order) => {
@@ -380,7 +440,6 @@ export function OrderCardPerTechnicals({
                         <Select
                           disabled={isLoadingOrders}
                           onValueChange={async (value) => {
-                            console.log(value)
                             await handleUpdateObservation(order.id, value)
                             await onFindAllOrders()
                           }}

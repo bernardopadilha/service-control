@@ -62,10 +62,10 @@ export function OrderCard({
   const [isLoadingDeleteOrder, setIsLoadingDeleteOrder] = useState(false)
 
   const iconsMap: any = {
-    Orçamento: <CircleDollarSign size={32} className="text-blue-500" />,
-    Execução: <Drill size={32} className="text-green-300" />,
-    Aguardando: <TimerOff size={32} className="text-yellow-300" />,
-    Finalizado: <CheckCheck size={32} className="text-violet-500" />,
+    Orçamento: <CircleDollarSign size={32} className="text-orange-500" />,
+    Execução: <Drill size={32} className="text-yellow-300" />,
+    Aguardando: <TimerOff size={32} className="text-red-500" />,
+    Finalizado: <CheckCheck size={32} className="text-green-500" />,
   }
 
   async function handleUpdateTechnical(
@@ -87,25 +87,6 @@ export function OrderCard({
     toast.success('Mudança de técnico realizada com sucesso!')
   }
 
-  async function handleUpdateObservation(
-    order_id: number,
-    update_observation_value: string,
-  ) {
-    const { error } = await supabase
-      .from('orders')
-      .update({
-        observation: update_observation_value,
-      })
-      .eq('id', order_id)
-
-    if (error) {
-      toast.error(error.message)
-      throw new Error(error.message)
-    }
-
-    toast.success('Mudança de aguardando realizado com sucesso!')
-  }
-
   async function handleDeleteOrder(orderId: number) {
     if (window.confirm('Você tem certeza que deseja entregar esse veículo')) {
       setIsLoadingDeleteOrder(true)
@@ -114,6 +95,114 @@ export function OrderCard({
       onFindAllOrders()
       toast.success('Veículo entregue com sucesso!')
     }
+  }
+
+  async function handleUpdateOrderCard({
+    newOrder,
+    order_id,
+    technical_id,
+  }: {
+    newOrder: number
+    order_id: number
+    technical_id: string
+  }) {
+    // Primeiro, obtenha a ordem atual do item que está sendo movido
+    const { data: currentOrderData, error: currentOrderError } = await supabase
+      .from('orders')
+      .select('order')
+      .eq('id', order_id)
+      .single()
+
+    if (currentOrderError) {
+      toast.error(currentOrderError.message)
+      throw new Error(currentOrderError.message)
+    }
+
+    const currentOrder = currentOrderData.order
+
+    // Se a nova ordem é igual à atual, não precisamos fazer nada
+    if (currentOrder === newOrder) {
+      return
+    }
+
+    // Busca todos os itens relacionados ao technical_id
+    const { data: ordersPerTechnical, error: ordersPerTechnicalError } =
+      await supabase.from('orders').select('*').eq('technical_id', technical_id)
+
+    if (ordersPerTechnicalError) {
+      toast.error(ordersPerTechnicalError.message)
+      throw new Error(ordersPerTechnicalError.message)
+    }
+
+    let itemsToUpdate = []
+
+    // Caso 1: Movendo para uma posição anterior (ex: de 5 para 3)
+    if (newOrder < currentOrder) {
+      // Seleciona itens que precisam ser incrementados (itens entre newOrder e currentOrder - 1)
+      itemsToUpdate = ordersPerTechnical.filter(
+        (order) =>
+          order.order >= newOrder &&
+          order.order < currentOrder &&
+          order.id !== order_id,
+      )
+
+      // Prepara as atualizações para incrementar a ordem desses itens
+      const updates = itemsToUpdate.map((order) =>
+        supabase
+          .from('orders')
+          .update({ order: order.order + 1 })
+          .eq('id', order.id),
+      )
+
+      // Atualiza o item que está sendo movido para a nova posição
+      updates.push(
+        supabase.from('orders').update({ order: newOrder }).eq('id', order_id),
+      )
+
+      // Executa todas as atualizações em paralelo
+      const results = await Promise.all(updates)
+      const hasError = results.some((res) => res.error)
+
+      if (hasError) {
+        toast.error('Erro ao atualizar a ordem dos carros')
+        throw new Error('Erro ao atualizar ordens')
+      }
+    }
+    // Caso 2: Movendo para uma posição posterior (ex: de 3 para 5)
+    else {
+      // Seleciona itens que precisam ser decrementados (itens entre currentOrder + 1 e newOrder)
+      itemsToUpdate = ordersPerTechnical.filter(
+        (order) =>
+          order.order > currentOrder &&
+          order.order <= newOrder &&
+          order.id !== order_id,
+      )
+
+      // Prepara as atualizações para decrementar a ordem desses itens
+      const updates = itemsToUpdate.map((order) =>
+        supabase
+          .from('orders')
+          .update({ order: order.order - 1 })
+          .eq('id', order.id),
+      )
+
+      // Atualiza o item que está sendo movido para a nova posição
+      updates.push(
+        supabase.from('orders').update({ order: newOrder }).eq('id', order_id),
+      )
+
+      // Executa todas as atualizações em paralelo
+      const results = await Promise.all(updates)
+      const hasError = results.some((res) => res.error)
+
+      if (hasError) {
+        toast.error('Erro ao atualizar a ordem dos carros')
+        throw new Error('Erro ao atualizar ordens')
+      }
+    }
+
+    onFindAllOrders()
+    toast.success('Ordem de carros atualizada com sucesso!')
   }
 
   return (
@@ -129,6 +218,9 @@ export function OrderCard({
               } else {
                 return technical_id === o.technical_id && o.step === step_type
               }
+            })
+            .sort((a, b) => {
+              return (a.order ?? 0) - (b.order ?? 0)
             })
             .map((order) => {
               return (
@@ -231,7 +323,6 @@ export function OrderCard({
                           </SelectGroup>
                         </SelectContent>
                       </Select>
-
                       <Select
                         value={order.technical_id}
                         onValueChange={async (value) => {
@@ -257,32 +348,38 @@ export function OrderCard({
                         </SelectContent>
                       </Select>
 
-                      {step_type === 'Aguardando' && (
+                      {technical_id !== 'allTechnical' && (
                         <Select
-                          disabled={isLoadingOrders}
                           onValueChange={async (value) => {
-                            console.log(value)
-                            await handleUpdateObservation(order.id, value)
-                            await onFindAllOrders()
+                            const newOrder = Number(value)
+                            if (order.order !== newOrder) {
+                              await handleUpdateOrderCard({
+                                newOrder,
+                                order_id: order.id,
+                                technical_id: order.technical_id,
+                              })
+                            }
                           }}
-                          value={
-                            order.observation === null ? '' : order.observation
-                          }
+                          value={String(order.order)}
                         >
                           <SelectTrigger className="w-full flex">
-                            <SelectValue placeholder="Sem observação" />
+                            <SelectValue placeholder="Ordem de carros" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectGroup>
-                              <SelectItem value="Sem observação">
-                                Sem observação
-                              </SelectItem>
-                              <SelectItem value="Lavação">Lavação</SelectItem>
-                              <SelectItem value="Geometria">
-                                Geometria
-                              </SelectItem>
-                              <SelectItem value="Peças">Peças</SelectItem>
-                            </SelectGroup>
+                            {orders.length > 0 &&
+                              orders
+                                .filter(
+                                  (order) =>
+                                    order.technical_id === technical_id,
+                                )
+                                .map((_, i) => (
+                                  <SelectItem
+                                    key={i}
+                                    value={(i + 1).toString()}
+                                  >
+                                    {i + 1}
+                                  </SelectItem>
+                                ))}
                           </SelectContent>
                         </Select>
                       )}

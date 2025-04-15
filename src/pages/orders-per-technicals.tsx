@@ -63,8 +63,6 @@ export function OrdersPerTechnical() {
       .select('*')
       .order('created_at', { ascending: true })
 
-    console.log(ordersData)
-
     if (error) {
       toast.error(error.message)
       throw new Error(error.message)
